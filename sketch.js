@@ -1284,9 +1284,9 @@ function drawRobotLeftPanel(layout) {
   text("청소 구역", layout.leftX, panelTop + 18);
 
   let binX = layout.leftX;
-  let binY = panelTop + 155;
-  let binW = 105;
-  let binH = 150;
+  let binY = panelTop + 150;
+  let binW = 100;
+  let binH = 142;
 
   stroke(239, 168, 53);
   strokeWeight(2);
@@ -1295,24 +1295,25 @@ function drawRobotLeftPanel(layout) {
 
   noStroke();
   fill(130);
-  rect(binX, binY + 12, 50, 90, 12);
-  rect(binX, binY - 48, 62, 18, 10);
+  rect(binX, binY + 10, 46, 84, 12);
+  rect(binX, binY - 42, 58, 16, 10);
 
   fill(101, 69, 35);
-  textSize(22);
+  textSize(20);
   textAlign(CENTER, TOP);
-  text("쓰레기통", binX, binY + 90);
+  text("쓰레기통", binX, binY + 86);
 
   fill(110);
   noStroke();
   textAlign(LEFT, TOP);
-  textSize(15);
+  textSize(14);
+  textLeading(22);
   text(
-    "청소로봇은 교실 바닥의 물건을 보고,\n쓰레기통으로 보낼지 책상 위에 둘지 정합니다.",
+    "청소로봇은 교실 바닥의 물건을 보고,\n쓰레기통으로 보낼지\n책상 위에 둘지 정합니다.",
     panelLeft + 22,
-    panelBottom - 86,
+    panelBottom - 108,
     layout.leftW - 44,
-    64
+    72
   );
 
   textAlign(CENTER, CENTER);
