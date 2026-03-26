@@ -1331,9 +1331,9 @@ function drawRobotCenterPanel(layout) {
   text("현재 물건", layout.centerX, panelTop + 18);
 
   let cardW = layout.centerW - 52;
-  let cardH = 230;
+  let cardH = 216;
   let cardX = layout.centerX;
-  let cardY = panelTop + 156;
+  let cardY = panelTop + 140;
 
   stroke(220);
   strokeWeight(2);
@@ -1343,26 +1343,33 @@ function drawRobotCenterPanel(layout) {
   fill(35);
   noStroke();
   textAlign(CENTER, TOP);
-  textSize(28);
-  text(robotCurrentItem.name, cardX, cardY - 90);
+  textSize(26);
+  text(robotCurrentItem.name, cardX, cardY - 82);
 
-  drawRobotItemVisual(robotCurrentItem, cardX, cardY - 10, 70);
+  drawRobotItemVisual(robotCurrentItem, cardX, cardY - 6, 60);
 
   fill(105);
-  textSize(17);
+  textSize(16);
   textAlign(CENTER, TOP);
-  text("이 물건은 어디로 가야 할까요?", cardX, cardY + 55);
+  text("이 물건은 어디로 가야 할까요?", cardX, cardY + 50);
 
   fill(80);
-  textSize(16);
+  textSize(15);
   textAlign(LEFT, TOP);
-  text("물건 설명", panelLeft + 24, panelBottom - 96);
+  text("물건 설명", panelLeft + 24, panelBottom - 92);
 
   fill(110);
-  textSize(15);
-  text(robotCurrentItem.hint, panelLeft + 24, panelBottom - 70, layout.centerW * 0.45, 50);
+  textSize(14);
+  textLeading(22);
+  text(
+    robotCurrentItem.hint,
+    panelLeft + 24,
+    panelBottom - 64,
+    layout.centerW - 170,
+    48
+  );
 
-  drawRobotDeskGraphic(panelLeft + layout.centerW - 95, panelBottom - 56, 90);
+  drawRobotDeskGraphic(panelLeft + layout.centerW - 82, panelBottom - 46, 66);
 
   textAlign(CENTER, CENTER);
 }
