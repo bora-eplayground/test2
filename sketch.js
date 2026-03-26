@@ -1089,9 +1089,6 @@ function getRandomJobCard() {
 // ======================================================
 // 4. 청소로봇 페이지
 // ======================================================
-// ======================================================
-// 4. 청소로봇 페이지
-// ======================================================
 let robotItems = [];
 let robotCurrentItem = null;
 let robotStage = 1;
@@ -1130,72 +1127,65 @@ function createRobotItems() {
 }
 
 function getRobotLayout() {
-  let contentW = min(width - 100, 1120);
+  let contentW = min(width - 80, 1120);
   let leftEdge = width / 2 - contentW / 2;
-  let gap = 24;
+  let topRowY = height * 0.42;
+  let gap = 22;
 
-  let leftW = 250;
+  let leftW = 235;
   let centerW = 430;
-  let rightW = contentW - leftW - centerW - gap * 2;
+  let rightW = 275;
+  let totalW = leftW + centerW + rightW + gap * 2;
+  let scaleW = min(1, contentW / totalW);
 
-  if (rightW < 290) {
-    rightW = 290;
-    centerW = contentW - leftW - rightW - gap * 2;
-  }
+  leftW *= scaleW;
+  centerW *= scaleW;
+  rightW *= scaleW;
+  gap *= scaleW;
 
-  let topTop = 150;
-  let topH = constrain(height * 0.42, 340, 390);
-  let topRowY = topTop + topH / 2;
+  let topH = constrain(height * 0.46, 350, 430) * scaleW;
+  topH = max(topH, 320);
 
   let leftX = leftEdge + leftW / 2;
   let centerX = leftEdge + leftW + gap + centerW / 2;
   let rightX = leftEdge + leftW + gap + centerW + gap + rightW / 2;
 
-  let bottomTop = topTop + topH + 40;
-  let bottomH = 170;
-  let bottomY = bottomTop + bottomH / 2;
-
-  let leftBottomW = 285;
-  let midBottomW = 285;
+  let bottomY = topRowY + topH / 2 + 120;
+  let bottomH = 145;
+  let leftBottomW = 280;
+  let midBottomW = 280;
   let rightBottomW = contentW - leftBottomW - midBottomW - gap * 2;
+  if (rightBottomW < 360) {
+    rightBottomW = 360;
+    let spare = contentW - rightBottomW - gap * 2;
+    leftBottomW = spare * 0.48;
+    midBottomW = spare * 0.52;
+  }
 
   let bottomLeftX = leftEdge + leftBottomW / 2;
   let bottomMidX = leftEdge + leftBottomW + gap + midBottomW / 2;
   let bottomRightX = leftEdge + leftBottomW + gap + midBottomW + gap + rightBottomW / 2;
 
-  let feedbackTop = bottomTop + bottomH + 22;
-  let feedbackH = 48;
-  let feedbackY = feedbackTop + feedbackH / 2;
-
   return {
-    contentW,
-    gap,
-
-    topTop,
-    topH,
     topRowY,
-
+    topH,
     leftX,
     centerX,
     rightX,
     leftW,
     centerW,
     rightW,
-
-    bottomTop,
-    bottomH,
     bottomY,
-
+    bottomH,
     bottomLeftX,
     bottomMidX,
     bottomRightX,
     leftBottomW,
     midBottomW,
     rightBottomW,
-
-    feedbackTop,
-    feedbackH,
-    feedbackY
+    gap,
+    feedbackY: bottomY + bottomH / 2 + 52,
+    contentW
   };
 }
 
@@ -1207,14 +1197,12 @@ function drawRobotPage() {
   let layout = getRobotLayout();
 
   fill(35);
-  noStroke();
-  textAlign(CENTER, CENTER);
   textSize(clampText(28, 34));
   text("우리 반 청소로봇 AI 체험", width / 2, 52);
 
   fill(92);
   textSize(clampText(15, 17));
-  text("첫 화면의 세 번째 아이콘에서 들어온 청소로봇 분류 체험입니다", width / 2, 88);
+  text("첫 화면의 세 번째 아이콘에서 들어온 청소로봇 분류 체험입니다", width / 2, 86);
 
   drawButton(86, 42, 120, 42, "뒤로가기");
 
@@ -1223,9 +1211,9 @@ function drawRobotPage() {
 }
 
 function drawRobotTopPanels(layout) {
-  drawRobotSoftPanel(layout.leftX, layout.topRowY, layout.leftW, layout.topH, 24);
-  drawRobotSoftPanel(layout.centerX, layout.topRowY, layout.centerW, layout.topH, 24);
-  drawRobotSoftPanel(layout.rightX, layout.topRowY, layout.rightW, layout.topH, 24);
+  drawSoftPanel(layout.leftX, layout.topRowY, layout.leftW, layout.topH, 24);
+  drawSoftPanel(layout.centerX, layout.topRowY, layout.centerW, layout.topH, 24);
+  drawSoftPanel(layout.rightX, layout.topRowY, layout.rightW, layout.topH, 24);
 
   drawRobotLeftPanel(layout);
   drawRobotCenterPanel(layout);
@@ -1233,31 +1221,23 @@ function drawRobotTopPanels(layout) {
 }
 
 function drawRobotBottomPanels(layout) {
-  drawRobotSoftPanel(layout.bottomLeftX, layout.bottomY, layout.leftBottomW, layout.bottomH, 24);
-  drawRobotSoftPanel(layout.bottomMidX, layout.bottomY, layout.midBottomW, layout.bottomH, 24);
-  drawRobotSoftPanel(layout.bottomRightX, layout.bottomY, layout.rightBottomW, layout.bottomH, 24);
-  drawRobotSoftPanel(width / 2, layout.feedbackY, layout.contentW, layout.feedbackH, 18);
+  drawSoftPanel(layout.bottomLeftX, layout.bottomY, layout.leftBottomW, layout.bottomH, 24);
+  drawSoftPanel(layout.bottomMidX, layout.bottomY, layout.midBottomW, layout.bottomH, 24);
+  drawSoftPanel(layout.bottomRightX, layout.bottomY, layout.rightBottomW, layout.bottomH, 24);
+  drawSoftPanel(width / 2, layout.feedbackY, layout.contentW, 44, 18);
 
-  let leftTop = layout.bottomTop;
-  let midTop = layout.bottomTop;
-  let rightTop = layout.bottomTop;
-
-  // 제목
   fill(35);
   noStroke();
-  textAlign(CENTER, TOP);
-  textSize(20);
-  text("학생 선택", layout.bottomLeftX, leftTop + 18);
-  text("로봇 학습 단계", layout.bottomMidX, midTop + 18);
-  text("진행", layout.bottomRightX, rightTop + 18);
+  textSize(22);
+  text("학생 선택", layout.bottomLeftX, layout.bottomY - 44);
+  text("로봇 학습 단계", layout.bottomMidX, layout.bottomY - 44);
+  text("진행", layout.bottomRightX, layout.bottomY - 44);
 
-  // 설명
   fill(110);
-  textSize(14);
-  textAlign(CENTER, TOP);
-  text("먼저 물건이 어디로 가야 하는지 골라 보세요.", layout.bottomLeftX, leftTop + 50);
-  text(getRobotStageDescription(), layout.bottomMidX, midTop + 48);
-  text("다음 물건으로 넘어가거나 처음부터 다시 시작할 수 있어요.", layout.bottomRightX, rightTop + 50);
+  textSize(15);
+  text("먼저 물건이 어디로 가야 하는지 골라 보세요.", layout.bottomLeftX, layout.bottomY - 12);
+  text(getRobotStageDescription(), layout.bottomMidX, layout.bottomY - 4);
+  text("다음 물건으로 넘어가거나 처음부터 다시 시작할 수 있어요.", layout.bottomRightX, layout.bottomY - 12);
 
   let btns = getRobotButtons(layout);
   for (let btn of btns) {
@@ -1265,17 +1245,16 @@ function drawRobotBottomPanels(layout) {
     drawRobotActionButton(btn, hover);
   }
 
-  fill(41, 72, 138);
   noStroke();
+  fill(41, 72, 138);
   textSize(17);
-  textAlign(CENTER, CENTER);
   text(robotFeedback, width / 2, layout.feedbackY + 1);
 }
 
 function drawRobotLeftPanel(layout) {
   let panelLeft = layout.leftX - layout.leftW / 2;
-  let panelTop = layout.topTop;
-  let panelBottom = panelTop + layout.topH;
+  let panelTop = layout.topRowY - layout.topH / 2;
+  let panelBottom = layout.topRowY + layout.topH / 2;
 
   fill(35);
   noStroke();
@@ -1284,7 +1263,7 @@ function drawRobotLeftPanel(layout) {
   text("청소 구역", layout.leftX, panelTop + 18);
 
   let binX = layout.leftX;
-  let binY = panelTop + 150;
+  let binY = panelTop + 155;
   let binW = 100;
   let binH = 142;
 
@@ -1301,7 +1280,7 @@ function drawRobotLeftPanel(layout) {
   fill(101, 69, 35);
   textSize(20);
   textAlign(CENTER, TOP);
-  text("쓰레기통", binX, binY + 86);
+  text("쓰레기통", binX, binY + 88);
 
   fill(110);
   noStroke();
@@ -1321,8 +1300,8 @@ function drawRobotLeftPanel(layout) {
 
 function drawRobotCenterPanel(layout) {
   let panelLeft = layout.centerX - layout.centerW / 2;
-  let panelTop = layout.topTop;
-  let panelBottom = panelTop + layout.topH;
+  let panelTop = layout.topRowY - layout.topH / 2;
+  let panelBottom = layout.topRowY + layout.topH / 2;
 
   fill(35);
   noStroke();
@@ -1333,7 +1312,7 @@ function drawRobotCenterPanel(layout) {
   let cardW = layout.centerW - 52;
   let cardH = 216;
   let cardX = layout.centerX;
-  let cardY = panelTop + 140;
+  let cardY = panelTop + 142;
 
   stroke(220);
   strokeWeight(2);
@@ -1346,7 +1325,7 @@ function drawRobotCenterPanel(layout) {
   textSize(26);
   text(robotCurrentItem.name, cardX, cardY - 82);
 
-  drawRobotItemVisual(robotCurrentItem, cardX, cardY - 6, 60);
+  drawRobotItemVisual(robotCurrentItem, cardX, cardY - 4, 60);
 
   fill(105);
   textSize(16);
@@ -1375,20 +1354,85 @@ function drawRobotCenterPanel(layout) {
 }
 
 function drawRobotRightPanel(layout) {
+  let panelLeft = layout.rightX - layout.rightW / 2;
+  let panelTop = layout.topRowY - layout.topH / 2;
+  let panelBottom = layout.topRowY + layout.topH / 2;
+
+  fill(35);
+  noStroke();
+  textAlign(CENTER, TOP);
+  textSize(22);
+  text("청소로봇 판단", layout.rightX, panelTop + 18);
+
+  fill(95);
+  textSize(14);
+  textAlign(LEFT, TOP);
+  textLeading(21);
+  text(
+    "로봇이 이 물건을 어떻게 판단하는지\n확인해 보세요.",
+    panelLeft + 22,
+    panelTop + 56,
+    layout.rightW - 44,
+    40
+  );
+
+  let cardW = layout.rightW - 44;
+
+  drawRobotInfoCard(
+    layout.rightX,
+    panelTop + 175,
+    cardW,
+    98,
+    "로봇의 예측",
+    robotGuessLabel,
+    robotStage === 1 ? color(219, 80, 20) : color(30, 120, 70),
+    18
+  );
+
+  drawRobotInfoCard(
+    layout.rightX,
+    panelTop + 287,
+    cardW,
+    116,
+    "학습 정보",
+    `라운드: ${robotRound} / ${robotMaxRounds}\n맞힌 개수: ${robotScore}\n학습 데이터: ${robotLearnedData}개`,
+    color(80),
+    14
+  );
+
+  fill(110);
+  noStroke();
+  textAlign(LEFT, TOP);
+  textSize(13);
+  textLeading(20);
+  text(
+    robotStage === 1
+      ? "1단계에서는 색과 겉모양만 보고 판단해\n오답이 자주 납니다."
+      : "2단계에서는 물건의 특징을 배워\n거의 정확하게 구분합니다.",
+    panelLeft + 22,
+    panelBottom - 62,
+    layout.rightW - 44,
+    42
+  );
+
+  textAlign(CENTER, CENTER);
+}
 
 function getRobotButtons(layout) {
-  let leftTop = layout.bottomTop;
-  let midTop = layout.bottomTop;
-  let rightTop = layout.bottomTop;
+  let leftX = layout.bottomLeftX;
+  let midX = layout.bottomMidX;
+  let rightX = layout.bottomRightX;
+  let yMain = layout.bottomY + 26;
+  let yChoicesTop = layout.bottomY + 8;
 
   return [
     {
       id: "choiceTrash",
       label: "쓰레기통으로 보내기",
-      x: layout.bottomLeftX,
-      y: leftTop + 104,
-      w: min(210, layout.leftBottomW * 0.76),
-      h: 38,
+      x: leftX,
+      y: yChoicesTop,
+      w: min(220, layout.leftBottomW * 0.78),
+      h: 42,
       disabled: robotAnswered || robotFinished,
       selected: false,
       onClick: () => handleRobotChoice("trash")
@@ -1396,10 +1440,10 @@ function getRobotButtons(layout) {
     {
       id: "choiceTool",
       label: "책상 위에 두기",
-      x: layout.bottomLeftX,
-      y: leftTop + 146,
-      w: min(210, layout.leftBottomW * 0.76),
-      h: 38,
+      x: leftX,
+      y: yMain + 18,
+      w: min(220, layout.leftBottomW * 0.78),
+      h: 42,
       disabled: robotAnswered || robotFinished,
       selected: false,
       onClick: () => handleRobotChoice("tool")
@@ -1407,10 +1451,10 @@ function getRobotButtons(layout) {
     {
       id: "stage1",
       label: "1단계 학습",
-      x: layout.bottomMidX - 66,
-      y: midTop + 126,
-      w: 118,
-      h: 40,
+      x: midX - 68,
+      y: yMain,
+      w: 120,
+      h: 42,
       disabled: false,
       selected: robotStage === 1,
       onClick: () => setRobotStage(1)
@@ -1418,10 +1462,10 @@ function getRobotButtons(layout) {
     {
       id: "stage2",
       label: "2단계 학습",
-      x: layout.bottomMidX + 66,
-      y: midTop + 126,
-      w: 118,
-      h: 40,
+      x: midX + 68,
+      y: yMain,
+      w: 120,
+      h: 42,
       disabled: false,
       selected: robotStage === 2,
       onClick: () => setRobotStage(2)
@@ -1429,10 +1473,10 @@ function getRobotButtons(layout) {
     {
       id: "reset",
       label: "처음부터",
-      x: layout.bottomRightX - 78,
-      y: rightTop + 126,
-      w: 136,
-      h: 40,
+      x: rightX - 82,
+      y: yMain,
+      w: 140,
+      h: 42,
       disabled: false,
       selected: false,
       onClick: () => initRobotGame()
@@ -1440,10 +1484,10 @@ function getRobotButtons(layout) {
     {
       id: "next",
       label: "다음 물건",
-      x: layout.bottomRightX + 78,
-      y: rightTop + 126,
-      w: 136,
-      h: 40,
+      x: rightX + 82,
+      y: yMain,
+      w: 140,
+      h: 42,
       disabled: robotFinished,
       selected: false,
       onClick: () => goRobotNextRound()
@@ -1477,7 +1521,7 @@ function drawRobotActionButton(btn, hover) {
 
   noStroke();
   fill(0, 14);
-  rect(btn.x, btn.y + 4, btn.w, btn.h, 12);
+  rect(btn.x, btn.y + 5, btn.w, btn.h, 12);
 
   stroke(strokeColor);
   strokeWeight(2);
@@ -1486,12 +1530,11 @@ function drawRobotActionButton(btn, hover) {
 
   noStroke();
   fill(textColor);
-  textAlign(CENTER, CENTER);
-  textSize(16);
+  textSize(17);
   text(btn.label, btn.x, btn.y + 1);
 }
 
-function drawRobotSoftPanel(x, y, w, h, radiusValue) {
+function drawSoftPanel(x, y, w, h, radiusValue) {
   noStroke();
   fill(0, 12);
   rect(x + 5, y + 7, w, h, radiusValue);
@@ -1502,27 +1545,21 @@ function drawRobotSoftPanel(x, y, w, h, radiusValue) {
   rect(x, y, w, h, radiusValue);
 }
 
-function drawRobotInfoCardBox(left, top, w, h, title, content, contentColor, contentSize) {
-  push();
-  rectMode(CORNER);
-
+function drawRobotInfoCard(x, y, w, h, title, content, contentColor, contentSize) {
   stroke(220);
   strokeWeight(2);
   fill(246, 248, 252);
-  rect(left, top, w, h, 18);
+  rect(x, y, w, h, 18);
 
   noStroke();
   fill(40);
-  textAlign(LEFT, TOP);
   textSize(18);
-  text(title, left + 16, top + 14);
+  textAlign(LEFT, TOP);
+  text(title, x - w / 2 + 18, y - h / 2 + 14);
 
   fill(contentColor);
   textSize(contentSize);
-  text(content, left + 16, top + 48, w - 32, h - 58);
-
-  pop();
-
+  text(content, x - w / 2 + 18, y - h / 2 + 46, w - 36, h - 58);
   textAlign(CENTER, CENTER);
 }
 
@@ -1628,9 +1665,8 @@ function drawRobotDeskGraphic(x, y, size) {
   stroke(180, 135, 80);
   strokeWeight(2);
   rect(0, 0, size * 1.05, size * 0.18, 8);
-  rect(-size * 0.34, size * 0.34, size * 0.12, size * 0.54, 8);
-  rect(size * 0.34, size * 0.34, size * 0.12, size * 0.54, 8);
-
+  rect(-size * 0.38, size * 0.35, size * 0.12, size * 0.56, 8);
+  rect(size * 0.38, size * 0.35, size * 0.12, size * 0.56, 8);
   pop();
 }
 
@@ -1702,7 +1738,6 @@ function drawRobotItemVisual(item, cx, cy, size) {
 
   pop();
 }
-
 // ======================================================
 // 버튼 / 유틸
 // ======================================================
