@@ -1375,67 +1375,6 @@ function drawRobotCenterPanel(layout) {
 }
 
 function drawRobotRightPanel(layout) {
-  let panelLeft = layout.rightX - layout.rightW / 2;
-  let panelTop = layout.topTop;
-  let panelBottom = panelTop + layout.topH;
-
-  fill(35);
-  noStroke();
-  textAlign(CENTER, TOP);
-  textSize(22);
-  text("청소로봇 판단", layout.rightX, panelTop + 18);
-
-  fill(95);
-  textSize(15);
-  textAlign(LEFT, TOP);
-  text(
-    "로봇이 이 물건을 어떻게 판단하는지 확인해 보세요.",
-    panelLeft + 22,
-    panelTop + 58,
-    layout.rightW - 44,
-    42
-  );
-
-  let cardW = layout.rightW - 44;
-
-  drawRobotInfoCardBox(
-    panelLeft + 22,
-    panelTop + 118,
-    cardW,
-    110,
-    "로봇의 예측",
-    robotGuessLabel,
-    robotStage === 1 ? color(219, 80, 20) : color(30, 120, 70),
-    20
-  );
-
-  drawRobotInfoCardBox(
-    panelLeft + 22,
-    panelTop + 245,
-    cardW,
-    128,
-    "학습 정보",
-    `라운드: ${robotRound} / ${robotMaxRounds}\n맞힌 개수: ${robotScore}\n학습 데이터: ${robotLearnedData}개`,
-    color(80),
-    15
-  );
-
-  fill(110);
-  noStroke();
-  textAlign(LEFT, TOP);
-  textSize(14);
-  text(
-    robotStage === 1
-      ? "1단계에서는 색이나 겉모양만 보고 판단해서 오답이 자주 납니다."
-      : "2단계에서는 물건의 특징을 잘 배워 거의 정확하게 구분합니다.",
-    panelLeft + 22,
-    panelBottom - 68,
-    layout.rightW - 44,
-    48
-  );
-
-  textAlign(CENTER, CENTER);
-}
 
 function getRobotButtons(layout) {
   let leftTop = layout.bottomTop;
