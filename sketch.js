@@ -1615,9 +1615,9 @@ function robotClassify(item) {
 
 function getRobotStageDescription() {
   if (robotStage === 1) {
-    return "현재 1단계\n색이나 겉모양만 보고 판단해서 자주 틀립니다.";
+    return "현재 1단계\n색과 겉모양만 보고\n자주 틀립니다.";
   }
-  return "현재 2단계\n물건의 특징을 잘 배워 거의 정확하게 구분합니다.";
+  return "현재 2단계\n물건 특징을 배워\n정확하게 구분합니다.";
 }
 
 function drawRobotDeskGraphic(x, y, size) {
