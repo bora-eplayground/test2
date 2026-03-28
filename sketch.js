@@ -1193,6 +1193,7 @@ function drawRobotPanel(x, y, w, h, r) {
 
 function drawRobotLeftPanel(ui) {
   const p = ui.left;
+  const textShift = 90;
 
   drawRobotText("청소 구역", p.x, p.y + 14, p.w, 24, 22, CENTER, color(35));
 
@@ -1213,9 +1214,9 @@ function drawRobotLeftPanel(ui) {
 
   drawRobotParagraph(
     "청소로봇은 교실 바닥의 물건을 보고,\n쓰레기통으로 보낼지\n책상 위에 둘지 정합니다.",
-    p.x + 16,
+    p.x + 16 + textShift,
     p.y + 238,
-    p.w - 32,
+    p.w - 32 - textShift,
     78,
     14,
     22,
