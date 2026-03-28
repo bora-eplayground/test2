@@ -1315,15 +1315,17 @@ function drawRobotRightPanel(ui) {
 }
 
 function drawRobotBottomPanels(ui) {
+  const textShift = 90;
+
   drawRobotText("학생 선택", ui.bottomLeft.x, ui.bottomLeft.y + 14, ui.bottomLeft.w, 22, 20, CENTER, color(35));
   drawRobotText("로봇 학습 단계", ui.bottomMid.x, ui.bottomMid.y + 14, ui.bottomMid.w, 22, 20, CENTER, color(35));
   drawRobotText("진행", ui.bottomRight.x, ui.bottomRight.y + 14, ui.bottomRight.w, 22, 20, CENTER, color(35));
 
   drawRobotParagraph(
     "먼저 물건이 어디로 가야 하는지 골라 보세요.",
-    ui.bottomLeft.x + 16,
+    ui.bottomLeft.x + 16 + textShift,
     ui.bottomLeft.y + 44,
-    ui.bottomLeft.w - 32,
+    ui.bottomLeft.w - 32 - textShift,
     36,
     14,
     20,
@@ -1333,9 +1335,9 @@ function drawRobotBottomPanels(ui) {
 
   drawRobotParagraph(
     getRobotStageDescription(),
-    ui.bottomMid.x + 16,
+    ui.bottomMid.x + 16 + textShift,
     ui.bottomMid.y + 40,
-    ui.bottomMid.w - 32,
+    ui.bottomMid.w - 32 - textShift,
     44,
     14,
     20,
@@ -1345,9 +1347,9 @@ function drawRobotBottomPanels(ui) {
 
   drawRobotParagraph(
     "다음 물건으로 넘어가거나 처음부터 다시 시작할 수 있어요.",
-    ui.bottomRight.x + 16,
+    ui.bottomRight.x + 16 + textShift,
     ui.bottomRight.y + 44,
-    ui.bottomRight.w - 32,
+    ui.bottomRight.w - 32 - textShift,
     36,
     14,
     20,
