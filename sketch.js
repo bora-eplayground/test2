@@ -1359,7 +1359,7 @@ fill(110);
 noStroke();
 textAlign(LEFT, TOP);
 textSize(14);
-text("다음 물건으로 넘어가거나 처음부터 다시 시작할 수 있어요.", ui.bottomRight.x + 120, ui.bottomRight.y + 50);
+text("다음 물건으로 넘어가거나 처음부터 다시 시작할 수 있어요.", ui.bottomRight.x + 90, ui.bottomRight.y + 50);
 pop();
 
   const buttons = getRobotButtons(ui);
