@@ -1348,16 +1348,17 @@ function drawRobotBottomPanels(ui) {
     color(110)
   );
 
-drawRobotText(
+push();
+textAlign(CENTER, TOP);
+noStroke();
+fill(110);
+textSize(14);
+text(
   "다음 물건으로 넘어가거나 처음부터 다시 시작할 수 있어요.",
-  ui.bottomRight.x + 150,
-  ui.bottomRight.y + 44,
-  ui.bottomRight.w - 140,
-  20,
-  14,
-  CENTER,
-  color(110)
+  ui.bottomRight.x + ui.bottomRight.w / 2 + 150,
+  ui.bottomRight.y + 44
 );
+pop();
 
   const buttons = getRobotButtons(ui);
   for (let i = 0; i < buttons.length; i++) {
