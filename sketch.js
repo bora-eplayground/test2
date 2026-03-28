@@ -1243,7 +1243,13 @@ function drawRobotCenterPanel(ui) {
 
   drawRobotItemVisual(robotCurrentItem, p.x + p.w / 2, p.y + 112, 48);
 
-  drawRobotText("이 물건은 어디로 가야 할까요?", p.x, p.y + 164, p.w, 22, 16, CENTER, color(105));
+push();
+fill(105);
+noStroke();
+textAlign(LEFT, TOP);
+textSize(16);
+text("이 물건은 어디로 가야 할까요?", p.x + 120, p.y + 164);
+pop();
 
   drawRobotText("물건 설명", p.x + 20 + textShift, p.y + 248, 90, 20, 15, LEFT, color(80));
 
