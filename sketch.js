@@ -1084,8 +1084,6 @@ function getRandomJobCard() {
   };
 }
 
-
-
 // ======================================================
 // 4. 청소로봇 페이지
 // ======================================================
@@ -1103,13 +1101,13 @@ let robotFinished = false;
 
 function initRobotGame() {
   robotItems = [
-    { name: "종이 쓰레기", type: "trash", visual: "paperTrash", hint: "구겨진 종이라 모양이 일정하지 않아요." },
-    { name: "과자봉지", type: "trash", visual: "wrapper", hint: "먹고 남은 포장지예요." },
-    { name: "지우개 가루", type: "trash", visual: "eraserDust", hint: "작고 흩어진 쓰레기예요." },
-    { name: "연필", type: "tool", visual: "pencil", hint: "글씨를 쓰는 학용품이에요." },
-    { name: "필통", type: "tool", visual: "pencilCase", hint: "학용품을 담는 통이에요." },
-    { name: "공책", type: "tool", visual: "notebook", hint: "얇게 넘길 수 있는 학용품이에요." },
-    { name: "책", type: "tool", visual: "book", hint: "두껍고 오래 쓰는 물건이에요." }
+    { name: "종이 쓰레기", type: "trash", visual: "paperTrash", hint: "구겨진 종이라\n모양이 일정하지 않아요." },
+    { name: "과자봉지", type: "trash", visual: "wrapper", hint: "먹고 남은\n포장지예요." },
+    { name: "지우개 가루", type: "trash", visual: "eraserDust", hint: "작고 흩어진\n쓰레기예요." },
+    { name: "연필", type: "tool", visual: "pencil", hint: "글씨를 쓰는\n학용품이에요." },
+    { name: "필통", type: "tool", visual: "pencilCase", hint: "학용품을 담는\n통이에요." },
+    { name: "공책", type: "tool", visual: "notebook", hint: "얇게 넘길 수 있는\n학용품이에요." },
+    { name: "책", type: "tool", visual: "book", hint: "두껍고 오래 쓰는\n물건이에요." }
   ];
 
   robotStage = 1;
@@ -1123,263 +1121,167 @@ function initRobotGame() {
   robotCurrentItem = random(robotItems);
 }
 
+function getRobotLayout() {
+  const contentW = 1020;
+  const startX = width / 2 - contentW / 2;
+
+  return {
+    backBtn: { x: 92, y: 42, w: 116, h: 40 },
+
+    left: { x: startX, y: 108, w: 200, h: 360 },
+    center: { x: startX + 220, y: 108, w: 390, h: 360 },
+    right: { x: startX + 630, y: 108, w: 390, h: 360 },
+
+    bottomLeft: { x: startX, y: 495, w: 240, h: 130 },
+    bottomMid: { x: startX + 260, y: 495, w: 240, h: 130 },
+    bottomRight: { x: startX + 520, y: 495, w: 500, h: 130 },
+
+    feedback: { x: startX, y: 700, w: 1020, h: 40 }
+  };
+}
+
 function drawRobotPage() {
   if (!robotItems.length || !robotCurrentItem) {
     initRobotGame();
   }
 
-  const layout = getRobotLayout();
+  const ui = getRobotLayout();
 
   push();
   textAlign(CENTER, CENTER);
-  fill(35);
   noStroke();
+  fill(35);
   textSize(34);
-  text("우리 반 청소로봇 AI 체험", width / 2, 42);
+  text("우리 반 청소로봇 AI 체험", width / 2, 22);
 
   fill(95);
   textSize(16);
-  text("첫 화면의 세 번째 아이콘에서 들어온 청소로봇 분류 체험입니다.", width / 2, 82);
+  text("첫 화면의 세 번째 아이콘에서 들어온 청소로봇 분류 체험입니다.", width / 2, 62);
   pop();
 
-  drawRobotBackButton(92, 46, 118, 42, "뒤로가기");
+  drawRobotTopButton(ui.backBtn.x, ui.backBtn.y, ui.backBtn.w, ui.backBtn.h, "뒤로가기");
 
-  drawRobotPanel(layout.left.x, layout.left.y, layout.left.w, layout.left.h, 24);
-  drawRobotPanel(layout.center.x, layout.center.y, layout.center.w, layout.center.h, 24);
-  drawRobotPanel(layout.right.x, layout.right.y, layout.right.w, layout.right.h, 24);
+  drawRobotPanel(ui.left.x, ui.left.y, ui.left.w, ui.left.h, 24);
+  drawRobotPanel(ui.center.x, ui.center.y, ui.center.w, ui.center.h, 24);
+  drawRobotPanel(ui.right.x, ui.right.y, ui.right.w, ui.right.h, 24);
 
-  drawRobotLeftPanel(layout);
-  drawRobotCenterPanel(layout);
-  drawRobotRightPanel(layout);
+  drawRobotLeftPanel(ui);
+  drawRobotCenterPanel(ui);
+  drawRobotRightPanel(ui);
 
-  drawRobotPanel(layout.bottomLeft.x, layout.bottomLeft.y, layout.bottomLeft.w, layout.bottomLeft.h, 24);
-  drawRobotPanel(layout.bottomMid.x, layout.bottomMid.y, layout.bottomMid.w, layout.bottomMid.h, 24);
-  drawRobotPanel(layout.bottomRight.x, layout.bottomRight.y, layout.bottomRight.w, layout.bottomRight.h, 24);
-  drawRobotPanel(layout.feedback.x, layout.feedback.y, layout.feedback.w, layout.feedback.h, 18);
+  drawRobotPanel(ui.bottomLeft.x, ui.bottomLeft.y, ui.bottomLeft.w, ui.bottomLeft.h, 24);
+  drawRobotPanel(ui.bottomMid.x, ui.bottomMid.y, ui.bottomMid.w, ui.bottomMid.h, 24);
+  drawRobotPanel(ui.bottomRight.x, ui.bottomRight.y, ui.bottomRight.w, ui.bottomRight.h, 24);
+  drawRobotPanel(ui.feedback.x, ui.feedback.y, ui.feedback.w, ui.feedback.h, 18);
 
-  drawRobotBottomPanels(layout);
+  drawRobotBottomPanels(ui);
 }
 
-function getRobotLayout() {
-  const contentW = min(width - 90, 1080);
-  const leftEdge = width / 2 - contentW / 2;
-  const gap = 22;
-
-  const topY = 340;
-  const topH = 400;
-
-  const leftW = 220;
-  const centerW = 410;
-  const rightW = contentW - leftW - centerW - gap * 2;
-
-  const bottomY = 645;
-  const bottomH = 150;
-
-  const bottomLeftW = 260;
-  const bottomMidW = 260;
-  const bottomRightW = contentW - bottomLeftW - bottomMidW - gap * 2;
-
-  return {
-    left: {
-      x: leftEdge + leftW / 2,
-      y: topY,
-      w: leftW,
-      h: topH
-    },
-    center: {
-      x: leftEdge + leftW + gap + centerW / 2,
-      y: topY,
-      w: centerW,
-      h: topH
-    },
-    right: {
-      x: leftEdge + leftW + gap + centerW + gap + rightW / 2,
-      y: topY,
-      w: rightW,
-      h: topH
-    },
-    bottomLeft: {
-      x: leftEdge + bottomLeftW / 2,
-      y: bottomY,
-      w: bottomLeftW,
-      h: bottomH
-    },
-    bottomMid: {
-      x: leftEdge + bottomLeftW + gap + bottomMidW / 2,
-      y: bottomY,
-      w: bottomMidW,
-      h: bottomH
-    },
-    bottomRight: {
-      x: leftEdge + bottomLeftW + gap + bottomMidW + gap + bottomRightW / 2,
-      y: bottomY,
-      w: bottomRightW,
-      h: bottomH
-    },
-    feedback: {
-      x: width / 2,
-      y: 792,
-      w: contentW,
-      h: 44
-    }
-  };
-}
-
-function drawRobotPanel(cx, cy, w, h, r) {
+function drawRobotPanel(x, y, w, h, r) {
   push();
-  rectMode(CENTER);
+  rectMode(CORNER);
   noStroke();
   fill(0, 12);
-  rect(cx + 4, cy + 6, w, h, r);
+  rect(x + 4, y + 6, w, h, r);
+
   stroke(220);
   strokeWeight(2);
   fill(255);
-  rect(cx, cy, w, h, r);
+  rect(x, y, w, h, r);
   pop();
 }
 
-function drawRobotLeftPanel(layout) {
-  const p = layout.left;
-  const left = p.x - p.w / 2;
-  const top = p.y - p.h / 2;
+function drawRobotLeftPanel(ui) {
+  const p = ui.left;
 
-  push();
-  textAlign(CENTER, TOP);
-  fill(35);
-  noStroke();
-  textSize(22);
-  text("청소 구역", p.x, top + 18);
-  pop();
+  drawRobotText("청소 구역", p.x, p.y + 14, p.w, 24, 22, CENTER, color(35));
 
   push();
   rectMode(CENTER);
   stroke(239, 168, 53);
   strokeWeight(2);
   fill(252, 247, 238);
-  rect(p.x, top + 150, 100, 132, 22);
+  rect(p.x + p.w / 2, p.y + 142, 94, 118, 22);
 
   noStroke();
   fill(130);
-  rect(p.x, top + 160, 44, 82, 12);
-  rect(p.x, top + 122, 56, 16, 10);
+  rect(p.x + p.w / 2, p.y + 146, 42, 78, 12);
+  rect(p.x + p.w / 2, p.y + 112, 54, 14, 10);
   pop();
 
-  push();
-  textAlign(CENTER, TOP);
-  fill(101, 69, 35);
-  noStroke();
-  textSize(19);
-  text("쓰레기통", p.x, top + 236);
-  pop();
+  drawRobotText("쓰레기통", p.x, p.y + 206, p.w, 22, 18, CENTER, color(101, 69, 35));
 
   drawRobotParagraph(
     "청소로봇은 교실 바닥의 물건을 보고,\n쓰레기통으로 보낼지\n책상 위에 둘지 정합니다.",
-    left + 18,
-    top + 260,
-    p.w - 36,
-    72,
+    p.x + 16,
+    p.y + 238,
+    p.w - 32,
+    78,
     14,
     22,
-    LEFT
+    LEFT,
+    color(110)
   );
 }
 
-function drawRobotCenterPanel(layout) {
-  const p = layout.center;
-  const left = p.x - p.w / 2;
-  const top = p.y - p.h / 2;
+function drawRobotCenterPanel(ui) {
+  const p = ui.center;
+
+  drawRobotText("현재 물건", p.x, p.y + 14, p.w, 24, 22, CENTER, color(35));
 
   push();
-  textAlign(CENTER, TOP);
-  fill(35);
-  noStroke();
-  textSize(22);
-  text("현재 물건", p.x, top + 18);
-  pop();
-
-  push();
-  rectMode(CENTER);
+  rectMode(CORNER);
   stroke(220);
   strokeWeight(2);
   fill(248, 250, 253);
-  rect(p.x, top + 148, p.w - 44, 186, 24);
+  rect(p.x + 20, p.y + 48, p.w - 40, 168, 24);
   pop();
 
-  push();
-  textAlign(CENTER, TOP);
-  fill(35);
-  noStroke();
-  textSize(24);
-  text(robotCurrentItem.name, p.x, top + 56);
-  pop();
+  drawRobotText(robotCurrentItem.name, p.x, p.y + 72, p.w, 24, 24, CENTER, color(35));
 
-  drawRobotItemVisual(robotCurrentItem, p.x, top + 126, 54);
+  drawRobotItemVisual(robotCurrentItem, p.x + p.w / 2, p.y + 112, 48);
 
-  push();
-  textAlign(CENTER, TOP);
-  fill(105);
-  noStroke();
-  textSize(16);
-  text("이 물건은 어디로 가야 할까요?", p.x, top + 182);
-  pop();
+  drawRobotText("이 물건은 어디로 가야 할까요?", p.x, p.y + 164, p.w, 22, 16, CENTER, color(105));
 
-  drawRobotParagraph(
-    "물건 설명",
-    left + 20,
-    top + 292,
-    120,
-    20,
-    15,
-    20,
-    LEFT,
-    color(80)
-  );
+  drawRobotText("물건 설명", p.x + 20, p.y + 248, 90, 20, 15, LEFT, color(80));
 
   drawRobotParagraph(
     robotCurrentItem.hint,
-    left + 20,
-    top + 320,
-    p.w - 150,
-    50,
+    p.x + 20,
+    p.y + 274,
+    p.w - 140,
+    52,
     14,
     22,
     LEFT,
     color(110)
   );
 
-  drawRobotDeskGraphic(left + p.w - 72, top + 345, 58);
+  drawRobotDeskGraphic(p.x + p.w - 74, p.y + 314, 56);
 }
 
-function drawRobotRightPanel(layout) {
-  const p = layout.right;
-  const left = p.x - p.w / 2;
-  const top = p.y - p.h / 2;
+function drawRobotRightPanel(ui) {
+  const p = ui.right;
 
-  push();
-  textAlign(CENTER, TOP);
-  fill(35);
-  noStroke();
-  textSize(22);
-  text("청소로봇 판단", p.x, top + 18);
-  pop();
+  drawRobotText("청소로봇 판단", p.x, p.y + 14, p.w, 24, 22, CENTER, color(35));
 
   drawRobotParagraph(
     "로봇이 이 물건을 어떻게 판단하는지\n확인해 보세요.",
-    left + 18,
-    top + 56,
+    p.x + 18,
+    p.y + 48,
     p.w - 36,
     42,
     14,
-    21,
+    20,
     LEFT,
     color(95)
   );
 
   drawRobotInfoCard(
-    p.x,
-    top + 155,
+    p.x + 18,
+    p.y + 96,
     p.w - 36,
-    92,
+    82,
     "로봇의 예측",
     robotGuessLabel,
     robotStage === 1 ? color(219, 80, 20) : color(30, 120, 70),
@@ -1387,10 +1289,10 @@ function drawRobotRightPanel(layout) {
   );
 
   drawRobotInfoCard(
-    p.x,
-    top + 266,
+    p.x + 18,
+    p.y + 190,
     p.w - 36,
-    106,
+    94,
     "학습 정보",
     `라운드: ${robotRound} / ${robotMaxRounds}\n맞힌 개수: ${robotScore}\n학습 데이터: ${robotLearnedData}개`,
     color(80),
@@ -1401,10 +1303,10 @@ function drawRobotRightPanel(layout) {
     robotStage === 1
       ? "1단계에서는 색과 겉모양만 보고 판단해\n오답이 자주 납니다."
       : "2단계에서는 물건의 특징을 배워\n거의 정확하게 구분합니다.",
-    left + 18,
-    top + 322,
+    p.x + 18,
+    p.y + 300,
     p.w - 36,
-    44,
+    42,
     13,
     20,
     LEFT,
@@ -1412,28 +1314,17 @@ function drawRobotRightPanel(layout) {
   );
 }
 
-function drawRobotBottomPanels(layout) {
-  const leftP = layout.bottomLeft;
-  const midP = layout.bottomMid;
-  const rightP = layout.bottomRight;
-  const fb = layout.feedback;
-
-  push();
-  textAlign(CENTER, TOP);
-  fill(35);
-  noStroke();
-  textSize(20);
-  text("학생 선택", leftP.x, leftP.y - 56);
-  text("로봇 학습 단계", midP.x, midP.y - 56);
-  text("진행", rightP.x, rightP.y - 56);
-  pop();
+function drawRobotBottomPanels(ui) {
+  drawRobotText("학생 선택", ui.bottomLeft.x, ui.bottomLeft.y + 14, ui.bottomLeft.w, 22, 20, CENTER, color(35));
+  drawRobotText("로봇 학습 단계", ui.bottomMid.x, ui.bottomMid.y + 14, ui.bottomMid.w, 22, 20, CENTER, color(35));
+  drawRobotText("진행", ui.bottomRight.x, ui.bottomRight.y + 14, ui.bottomRight.w, 22, 20, CENTER, color(35));
 
   drawRobotParagraph(
     "먼저 물건이 어디로 가야 하는지 골라 보세요.",
-    leftP.x - leftP.w / 2 + 18,
-    leftP.y - 30,
-    leftP.w - 36,
-    38,
+    ui.bottomLeft.x + 16,
+    ui.bottomLeft.y + 44,
+    ui.bottomLeft.w - 32,
+    36,
     14,
     20,
     LEFT,
@@ -1442,10 +1333,10 @@ function drawRobotBottomPanels(layout) {
 
   drawRobotParagraph(
     getRobotStageDescription(),
-    midP.x - midP.w / 2 + 18,
-    midP.y - 40,
-    midP.w - 36,
-    54,
+    ui.bottomMid.x + 16,
+    ui.bottomMid.y + 40,
+    ui.bottomMid.w - 32,
+    44,
     14,
     20,
     CENTER,
@@ -1454,41 +1345,41 @@ function drawRobotBottomPanels(layout) {
 
   drawRobotParagraph(
     "다음 물건으로 넘어가거나 처음부터 다시 시작할 수 있어요.",
-    rightP.x - rightP.w / 2 + 18,
-    rightP.y - 30,
-    rightP.w - 36,
-    38,
+    ui.bottomRight.x + 16,
+    ui.bottomRight.y + 44,
+    ui.bottomRight.w - 32,
+    36,
     14,
     20,
     CENTER,
     color(110)
   );
 
-  const buttons = getRobotButtons(layout);
+  const buttons = getRobotButtons(ui);
   for (let i = 0; i < buttons.length; i++) {
     const btn = buttons[i];
-    const hover = robotIsInside(mouseX, mouseY, btn.x, btn.y, btn.w, btn.h);
+    const hover = robotPointInCenterBox(mouseX, mouseY, btn.x, btn.y, btn.w, btn.h);
     drawRobotActionButton(btn, hover);
   }
 
   push();
   textAlign(CENTER, CENTER);
-  fill(41, 72, 138);
   noStroke();
+  fill(41, 72, 138);
   textSize(16);
-  text(robotFeedback, fb.x, fb.y);
+  text(robotFeedback, ui.feedback.x + ui.feedback.w / 2, ui.feedback.y + ui.feedback.h / 2);
   pop();
 }
 
-function getRobotButtons(layout) {
+function getRobotButtons(ui) {
   return [
     {
       id: "choiceTrash",
       label: "쓰레기통으로 보내기",
-      x: layout.bottomLeft.x,
-      y: layout.bottomLeft.y + 10,
-      w: 206,
-      h: 40,
+      x: ui.bottomLeft.x + ui.bottomLeft.w / 2,
+      y: ui.bottomLeft.y + 92,
+      w: 192,
+      h: 36,
       disabled: robotAnswered || robotFinished,
       selected: false,
       onClick: () => handleRobotChoice("trash")
@@ -1496,10 +1387,10 @@ function getRobotButtons(layout) {
     {
       id: "choiceTool",
       label: "책상 위에 두기",
-      x: layout.bottomLeft.x,
-      y: layout.bottomLeft.y + 54,
-      w: 206,
-      h: 40,
+      x: ui.bottomLeft.x + ui.bottomLeft.w / 2,
+      y: ui.bottomLeft.y + 130,
+      w: 192,
+      h: 36,
       disabled: robotAnswered || robotFinished,
       selected: false,
       onClick: () => handleRobotChoice("tool")
@@ -1507,10 +1398,10 @@ function getRobotButtons(layout) {
     {
       id: "stage1",
       label: "1단계 학습",
-      x: layout.bottomMid.x - 62,
-      y: layout.bottomMid.y + 36,
-      w: 112,
-      h: 40,
+      x: ui.bottomMid.x + ui.bottomMid.w / 2 - 54,
+      y: ui.bottomMid.y + 118,
+      w: 102,
+      h: 36,
       disabled: false,
       selected: robotStage === 1,
       onClick: () => setRobotStage(1)
@@ -1518,10 +1409,10 @@ function getRobotButtons(layout) {
     {
       id: "stage2",
       label: "2단계 학습",
-      x: layout.bottomMid.x + 62,
-      y: layout.bottomMid.y + 36,
-      w: 112,
-      h: 40,
+      x: ui.bottomMid.x + ui.bottomMid.w / 2 + 54,
+      y: ui.bottomMid.y + 118,
+      w: 102,
+      h: 36,
       disabled: false,
       selected: robotStage === 2,
       onClick: () => setRobotStage(2)
@@ -1529,10 +1420,10 @@ function getRobotButtons(layout) {
     {
       id: "reset",
       label: "처음부터",
-      x: layout.bottomRight.x - 74,
-      y: layout.bottomRight.y + 36,
-      w: 128,
-      h: 40,
+      x: ui.bottomRight.x + ui.bottomRight.w / 2 - 72,
+      y: ui.bottomRight.y + 118,
+      w: 120,
+      h: 36,
       disabled: false,
       selected: false,
       onClick: () => initRobotGame()
@@ -1540,10 +1431,10 @@ function getRobotButtons(layout) {
     {
       id: "next",
       label: "다음 물건",
-      x: layout.bottomRight.x + 74,
-      y: layout.bottomRight.y + 36,
-      w: 128,
-      h: 40,
+      x: ui.bottomRight.x + ui.bottomRight.w / 2 + 72,
+      y: ui.bottomRight.y + 118,
+      w: 120,
+      h: 36,
       disabled: robotFinished,
       selected: false,
       onClick: () => goRobotNextRound()
@@ -1589,13 +1480,13 @@ function drawRobotActionButton(btn, hover) {
   noStroke();
   fill(textColor);
   textAlign(CENTER, CENTER);
-  textSize(16);
+  textSize(15);
   text(btn.label, btn.x, btn.y);
   pop();
 }
 
-function drawRobotBackButton(x, y, w, h, label) {
-  const hover = robotIsInside(mouseX, mouseY, x, y, w, h);
+function drawRobotTopButton(x, y, w, h, label) {
+  const hover = robotPointInCenterBox(mouseX, mouseY, x, y, w, h);
 
   push();
   rectMode(CENTER);
@@ -1611,36 +1502,46 @@ function drawRobotBackButton(x, y, w, h, label) {
   noStroke();
   fill(40);
   textAlign(CENTER, CENTER);
-  textSize(16);
+  textSize(15);
   text(label, x, y);
   pop();
 }
 
-function drawRobotInfoCard(cx, cy, w, h, title, content, contentColor, contentSize) {
+function drawRobotInfoCard(x, y, w, h, title, content, contentColor, contentSize) {
   push();
-  rectMode(CENTER);
+  rectMode(CORNER);
   stroke(220);
   strokeWeight(2);
   fill(246, 248, 252);
-  rect(cx, cy, w, h, 18);
+  rect(x, y, w, h, 18);
 
   noStroke();
   fill(40);
   textAlign(LEFT, TOP);
   textSize(18);
-  text(title, cx - w / 2 + 16, cy - h / 2 + 14);
+  text(title, x + 14, y + 10);
 
   fill(contentColor);
   textSize(contentSize);
-  text(content, cx - w / 2 + 16, cy - h / 2 + 44, w - 32, h - 52);
+  text(content, x + 14, y + 38, w - 28, h - 46);
+  pop();
+}
+
+function drawRobotText(str, x, y, w, h, size, alignMode, fillColorValue) {
+  push();
+  noStroke();
+  fill(fillColorValue || color(110));
+  textAlign(alignMode, TOP);
+  textSize(size);
+  text(str, x, y, w, h);
   pop();
 }
 
 function drawRobotParagraph(str, x, y, w, h, size, leadingValue, alignMode, fillColorValue) {
   push();
-  textAlign(alignMode, TOP);
   noStroke();
   fill(fillColorValue || color(110));
+  textAlign(alignMode, TOP);
   textSize(size);
   textLeading(leadingValue);
   text(str, x, y, w, h);
@@ -1648,7 +1549,7 @@ function drawRobotParagraph(str, x, y, w, h, size, leadingValue, alignMode, fill
 }
 
 function handleRobotPageClick() {
-  if (robotIsInside(mouseX, mouseY, 92, 46, 118, 42)) {
+  if (robotPointInCenterBox(mouseX, mouseY, 92, 42, 116, 40)) {
     page = 1;
     return;
   }
@@ -1656,7 +1557,7 @@ function handleRobotPageClick() {
   const buttons = getRobotButtons(getRobotLayout());
   for (let i = 0; i < buttons.length; i++) {
     const btn = buttons[i];
-    if (!btn.disabled && robotIsInside(mouseX, mouseY, btn.x, btn.y, btn.w, btn.h)) {
+    if (!btn.disabled && robotPointInCenterBox(mouseX, mouseY, btn.x, btn.y, btn.w, btn.h)) {
       btn.onClick();
       return;
     }
@@ -1743,26 +1644,26 @@ function getRobotStageDescription() {
   return "현재 2단계\n물건 특징을 배워\n정확하게 구분합니다.";
 }
 
-function robotIsInside(px, py, cx, cy, w, h) {
+function robotPointInCenterBox(px, py, cx, cy, w, h) {
   return (
-    px > cx - w / 2 &&
-    px < cx + w / 2 &&
-    py > cy - h / 2 &&
-    py < cy + h / 2
+    px >= cx - w / 2 &&
+    px <= cx + w / 2 &&
+    py >= cy - h / 2 &&
+    py <= cy + h / 2
   );
 }
 
 function drawRobotDeskGraphic(x, y, size) {
   push();
-  translate(x, y);
   rectMode(CENTER);
+  translate(x, y);
 
   fill(224, 194, 146);
   stroke(180, 135, 80);
   strokeWeight(2);
-  rect(0, 0, size, size * 0.16, 8);
-  rect(-size * 0.34, size * 0.35, size * 0.12, size * 0.52, 8);
-  rect(size * 0.34, size * 0.35, size * 0.12, size * 0.52, 8);
+  rect(0, 0, size, size * 0.14, 8);
+  rect(-size * 0.3, size * 0.3, size * 0.1, size * 0.46, 8);
+  rect(size * 0.3, size * 0.3, size * 0.1, size * 0.46, 8);
   pop();
 }
 
@@ -1774,70 +1675,71 @@ function drawRobotItemVisual(item, cx, cy, size) {
 
   if (item.visual === "paperTrash") {
     fill(220);
-    ellipse(-size * 0.18, -size * 0.05, size * 0.32, size * 0.28);
-    ellipse(size * 0.02, -size * 0.1, size * 0.3, size * 0.26);
-    ellipse(size * 0.2, size * 0.06, size * 0.28, size * 0.24);
-    ellipse(-size * 0.02, size * 0.16, size * 0.3, size * 0.24);
+    ellipse(-size * 0.16, -size * 0.04, size * 0.28, size * 0.24);
+    ellipse(size * 0.02, -size * 0.08, size * 0.26, size * 0.22);
+    ellipse(size * 0.18, size * 0.06, size * 0.24, size * 0.22);
+    ellipse(-size * 0.02, size * 0.14, size * 0.26, size * 0.22);
   }
 
   if (item.visual === "wrapper") {
     fill(255, 205, 96);
-    rect(0, 0, size * 0.58, size * 0.22, 6);
-    triangle(-size * 0.29, 0, -size * 0.45, -size * 0.09, -size * 0.45, size * 0.09);
-    triangle(size * 0.29, 0, size * 0.45, -size * 0.09, size * 0.45, size * 0.09);
+    rect(0, 0, size * 0.54, size * 0.2, 6);
+    triangle(-size * 0.27, 0, -size * 0.41, -size * 0.08, -size * 0.41, size * 0.08);
+    triangle(size * 0.27, 0, size * 0.41, -size * 0.08, size * 0.41, size * 0.08);
   }
 
   if (item.visual === "eraserDust") {
     fill(215);
     const dots = [
-      [-0.24, -0.1], [-0.12, 0.08], [0.0, -0.03], [0.14, 0.1],
-      [0.23, -0.06], [0.04, 0.16], [-0.18, 0.16], [0.18, -0.16]
+      [-0.22, -0.08], [-0.11, 0.08], [0.0, -0.03], [0.13, 0.09],
+      [0.22, -0.05], [0.03, 0.15], [-0.16, 0.14], [0.16, -0.14]
     ];
     for (let i = 0; i < dots.length; i++) {
-      ellipse(dots[i][0] * size, dots[i][1] * size, size * 0.1, size * 0.1);
+      ellipse(dots[i][0] * size, dots[i][1] * size, size * 0.09, size * 0.09);
     }
   }
 
   if (item.visual === "pencil") {
     fill(244, 211, 94);
-    rect(0, 0, size * 0.72, size * 0.14, 6);
+    rect(0, 0, size * 0.64, size * 0.12, 6);
     fill(242, 132, 130);
-    rect(size * 0.24, 0, size * 0.12, size * 0.14, 2);
+    rect(size * 0.22, 0, size * 0.1, size * 0.12, 2);
     fill(248, 237, 226);
-    triangle(size * 0.36, -size * 0.07, size * 0.52, 0, size * 0.36, size * 0.07);
+    triangle(size * 0.32, -size * 0.06, size * 0.46, 0, size * 0.32, size * 0.06);
     fill(50);
-    triangle(size * 0.52, 0, size * 0.58, -size * 0.03, size * 0.58, size * 0.03);
+    triangle(size * 0.46, 0, size * 0.52, -size * 0.02, size * 0.52, size * 0.02);
   }
 
   if (item.visual === "pencilCase") {
     fill(123, 211, 137);
-    rect(0, 0, size * 0.56, size * 0.28, 12);
+    rect(0, 0, size * 0.5, size * 0.24, 12);
     fill(255);
-    rect(0, 0, size * 0.46, size * 0.05, 3);
+    rect(0, 0, size * 0.38, size * 0.04, 3);
   }
 
   if (item.visual === "notebook") {
     fill(116, 192, 252);
-    rect(0, 0, size * 0.42, size * 0.62, 8);
+    rect(0, 0, size * 0.34, size * 0.52, 8);
     fill(255);
-    rect(0, 0, size * 0.2, size * 0.42, 4);
+    rect(0, 0, size * 0.14, size * 0.34, 4);
     stroke(180);
     strokeWeight(2);
-    line(-size * 0.06, -size * 0.21, -size * 0.06, size * 0.21);
+    line(-size * 0.05, -size * 0.17, -size * 0.05, size * 0.17);
     noStroke();
   }
 
   if (item.visual === "book") {
     fill(239, 130, 167);
-    rect(0, 0, size * 0.5, size * 0.68, 10);
+    rect(0, 0, size * 0.42, size * 0.56, 10);
     fill(245);
-    rect(0, 0, size * 0.22, size * 0.42, 4);
+    rect(0, 0, size * 0.18, size * 0.32, 4);
     fill(223);
-    rect(-size * 0.16, 0, size * 0.08, size * 0.68, 10);
+    rect(-size * 0.13, 0, size * 0.06, size * 0.56, 10);
   }
 
   pop();
 }
+
 
 // ======================================================
 // 버튼 / 유틸
