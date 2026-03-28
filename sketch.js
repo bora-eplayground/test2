@@ -1350,7 +1350,7 @@ function drawRobotBottomPanels(ui) {
 
 drawRobotText(
   "다음 물건으로 넘어가거나 처음부터 다시 시작할 수 있어요.",
-  ui.bottomRight.x + 110,
+  ui.bottomRight.x + 150,
   ui.bottomRight.y + 44,
   ui.bottomRight.w - 140,
   20,
