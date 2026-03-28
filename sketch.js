@@ -1248,7 +1248,7 @@ fill(105);
 noStroke();
 textAlign(LEFT, TOP);
 textSize(16);
-text("이 물건은 어디로 가야 할까요?", p.x + 300, p.y + 164);
+text("이 물건은 어디로 가야 할까요?", p.x + 230, p.y + 164);
 pop();
 
   drawRobotText("물건 설명", p.x + 20 + textShift, p.y + 248, 90, 20, 15, LEFT, color(80));
