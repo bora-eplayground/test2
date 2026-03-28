@@ -1349,15 +1349,11 @@ function drawRobotBottomPanels(ui) {
   );
 
 push();
-textAlign(CENTER, TOP);
+fill(255, 0, 0);
 noStroke();
-fill(110);
-textSize(14);
-text(
-  "다음 물건으로 넘어가거나 처음부터 다시 시작할 수 있어요.",
-  ui.bottomRight.x + ui.bottomRight.w / 2 + 150,
-  ui.bottomRight.y + 44
-);
+textAlign(LEFT, TOP);
+textSize(24);
+text("TEST 문장", ui.bottomRight.x + 300, ui.bottomRight.y + 50);
 pop();
 
   const buttons = getRobotButtons(ui);
