@@ -1226,6 +1226,7 @@ function drawRobotLeftPanel(ui) {
 
 function drawRobotCenterPanel(ui) {
   const p = ui.center;
+  const textShift = 90;
 
   drawRobotText("현재 물건", p.x, p.y + 14, p.w, 24, 22, CENTER, color(35));
 
@@ -1243,13 +1244,13 @@ function drawRobotCenterPanel(ui) {
 
   drawRobotText("이 물건은 어디로 가야 할까요?", p.x, p.y + 164, p.w, 22, 16, CENTER, color(105));
 
-  drawRobotText("물건 설명", p.x + 20, p.y + 248, 90, 20, 15, LEFT, color(80));
+  drawRobotText("물건 설명", p.x + 20 + textShift, p.y + 248, 90, 20, 15, LEFT, color(80));
 
   drawRobotParagraph(
     robotCurrentItem.hint,
-    p.x + 20,
+    p.x + 20 + textShift,
     p.y + 274,
-    p.w - 140,
+    p.w - 140 - textShift,
     52,
     14,
     22,
