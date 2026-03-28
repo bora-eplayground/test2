@@ -1262,14 +1262,15 @@ function drawRobotCenterPanel(ui) {
 
 function drawRobotRightPanel(ui) {
   const p = ui.right;
+  const textShift = 90;
 
   drawRobotText("청소로봇 판단", p.x, p.y + 14, p.w, 24, 22, CENTER, color(35));
 
   drawRobotParagraph(
     "로봇이 이 물건을 어떻게 판단하는지\n확인해 보세요.",
-    p.x + 18,
+    p.x + 18 + textShift,
     p.y + 48,
-    p.w - 36,
+    p.w - 36 - textShift,
     42,
     14,
     20,
@@ -1303,9 +1304,9 @@ function drawRobotRightPanel(ui) {
     robotStage === 1
       ? "1단계에서는 색과 겉모양만 보고 판단해\n오답이 자주 납니다."
       : "2단계에서는 물건의 특징을 배워\n거의 정확하게 구분합니다.",
-    p.x + 18,
+    p.x + 18 + textShift,
     p.y + 300,
-    p.w - 36,
+    p.w - 36 - textShift,
     42,
     13,
     20,
