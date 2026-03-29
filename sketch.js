@@ -1,4 +1,10 @@
-let page = 1;
+function setup() {
+  createCanvas(400, 400);
+}
+
+function draw() {
+  background(220);
+}let page = 1;
 let cnv;
 
 // --------------------
@@ -34,6 +40,19 @@ let selectedCard = null;
 let flyingCard = null;
 let nextCardId = 1;
 
+
+// --------------------
+// 경제 용어 카드
+// --------------------
+let econRawTerms = [];
+let econTerms = [];
+let econCategories = ["전체", "기초경제", "소비생활", "금융", "투자", "기업과창업", "정부와세금", "무역과세계", "환경과미래"];
+let econActiveCategory = "전체";
+let econCards = [];
+let econCurrentIndex = 0;
+let econFlipProgress = 0;
+let econFlipTarget = 0;
+
 const CARD_W = 130;
 const CARD_H = 180;
 const MAX_HAND = 5;
@@ -68,6 +87,7 @@ function setup() {
   setupHomeIcons();
   setupJobDeck();
   setupDice();
+  initEconomyCards();
 }
 
 function windowResized() {
@@ -99,6 +119,14 @@ function setupHomeIcons() {
       action: () => {
         initRobotGame();
         page = 4;
+      }
+    },
+    {
+      type: "economy",
+      label: "경제용어",
+      action: () => {
+        initEconomyCards();
+        page = 5;
       }
     }
   ];
@@ -227,6 +255,9 @@ function draw() {
     drawJobCardPage();
   } else if (page === 4) {
     drawRobotPage();
+  } else if (page === 5) {
+    updateEconomyFlip();
+    drawEconomyPage();
   }
 }
 
@@ -242,6 +273,8 @@ function mousePressed() {
     handleJobPageClick();
   } else if (page === 4) {
     handleRobotPageClick();
+  } else if (page === 5) {
+    handleEconomyPageClick();
   }
 }
 
@@ -336,6 +369,8 @@ function drawCenteredIcons(iconList, centerX, centerY, iconSize, gap) {
       drawHomeJobCardIcon(x, y - 18 + (hover ? -4 : 0), iconSize * 0.56);
     } else if (iconList[i].type === "robot") {
       drawHomeRobotIcon(x, y - 16 + (hover ? -4 : 0), iconSize * 0.58);
+    } else if (iconList[i].type === "economy") {
+      drawHomeEconomyIcon(x, y - 16 + (hover ? -4 : 0), iconSize * 0.58);
     }
 
     noStroke();
@@ -433,6 +468,45 @@ function drawHomeRobotIcon(x, y, size) {
   rect(size * 0.3, size * 0.2, size * 0.18, size * 0.22, 6);
   fill(130);
   rect(size * 0.3, size * 0.1, size * 0.18, size * 0.05, 3);
+
+  pop();
+}
+
+
+function drawHomeEconomyIcon(x, y, size) {
+  push();
+  translate(x, y);
+
+  noStroke();
+  fill(0, 16);
+  ellipse(0, size * 0.56, size * 0.92, size * 0.18);
+
+  stroke(95, 132, 192);
+  strokeWeight(2);
+  fill(255);
+  rect(0, 0, size * 0.82, size * 1.02, 18);
+
+  noStroke();
+  fill(232, 241, 255);
+  rect(0, -size * 0.12, size * 0.66, size * 0.22, 10);
+
+  fill(61, 98, 163);
+  textSize(size * 0.14);
+  text("경제", 0, -size * 0.12);
+
+  stroke(95, 132, 192);
+  strokeWeight(3);
+  line(-size * 0.22, size * 0.12, -size * 0.22, size * 0.28);
+  line(-size * 0.05, 0, -size * 0.05, size * 0.28);
+  line(size * 0.12, size * 0.08, size * 0.12, size * 0.28);
+  line(size * 0.29, -size * 0.04, size * 0.29, size * 0.28);
+
+  noStroke();
+  fill(95, 132, 192);
+  circle(-size * 0.22, size * 0.12, size * 0.07);
+  circle(-size * 0.05, 0, size * 0.07);
+  circle(size * 0.12, size * 0.08, size * 0.07);
+  circle(size * 0.29, -size * 0.04, size * 0.07);
 
   pop();
 }
@@ -1739,6 +1813,461 @@ function drawRobotItemVisual(item, cx, cy, size) {
 // ======================================================
 // 버튼 / 유틸
 // ======================================================
+
+// ======================================================
+// 5. 경제 용어 카드 페이지
+// ======================================================
+function initEconomyCards() {
+  if (econRawTerms.length === 0) {
+    econRawTerms = [
+      { term: "인플레이션", dictionary: "물가가 전반적으로 계속 오르는 현상이다.", easy: "같은 돈으로 살 수 있는 물건이 점점 줄어드는 상태예요.", category: "기초경제" },
+      { term: "디플레이션", dictionary: "물가가 전반적으로 계속 하락하는 현상이다.", easy: "물건값이 계속 내려가서 사람들이 소비를 미루게 되는 상태예요.", category: "기초경제" },
+      { term: "금리", dictionary: "돈을 빌리거나 맡길 때 적용되는 이자 비율이다.", easy: "돈 사용료의 비율이라고 생각하면 쉬워요.", category: "금융" },
+      { term: "기준금리", dictionary: "중앙은행이 정하는 대표 금리로 시중 금리에 영향을 준다.", easy: "나라의 기본 금리 버튼 같은 거예요.", category: "금융" },
+      { term: "환율", dictionary: "서로 다른 나라 돈을 바꿀 때 적용되는 교환 비율이다.", easy: "외국 돈의 가격이라고 보면 돼요.", category: "무역과세계" },
+      { term: "수요", dictionary: "소비자가 어떤 재화나 서비스를 사고자 하는 욕구와 양이다.", easy: "사고 싶어 하는 사람들의 양이에요.", category: "기초경제" },
+      { term: "공급", dictionary: "생산자가 시장에 내놓는 재화나 서비스의 양이다.", easy: "팔기 위해 준비된 물건의 양이에요.", category: "기초경제" },
+      { term: "시장", dictionary: "재화와 서비스가 거래되는 장소나 구조를 뜻한다.", easy: "사고파는 일이 이루어지는 공간이에요.", category: "기초경제" },
+      { term: "가격", dictionary: "재화나 서비스의 가치를 돈으로 나타낸 것이다.", easy: "물건값 또는 서비스값이에요.", category: "기초경제" },
+      { term: "소비", dictionary: "재화나 서비스를 사용하거나 이용하는 경제 활동이다.", easy: "물건을 사서 쓰는 행동이에요.", category: "소비생활" },
+      { term: "저축", dictionary: "미래를 위해 현재의 소득 일부를 남겨 두는 것이다.", easy: "지금 다 쓰지 않고 모아 두는 돈이에요.", category: "금융" },
+      { term: "투자", dictionary: "미래의 이익을 기대하며 돈이나 자원을 투입하는 것이다.", easy: "나중에 더 큰 가치를 기대하고 미리 넣는 돈이에요.", category: "투자" },
+      { term: "예산", dictionary: "일정 기간의 수입과 지출을 미리 계획한 것이다.", easy: "돈을 어떻게 쓸지 미리 짜는 계획표예요.", category: "소비생활" },
+      { term: "수입", dictionary: "개인이나 기업이 벌어들이는 돈이다.", easy: "들어오는 돈이에요.", category: "소비생활" },
+      { term: "지출", dictionary: "물건 구매나 서비스 이용 등으로 돈이 나가는 것이다.", easy: "나가는 돈이에요.", category: "소비생활" },
+      { term: "이익", dictionary: "수입에서 비용을 뺀 뒤 남는 금액이다.", easy: "벌어들인 돈에서 쓴 돈을 빼고 남은 돈이에요.", category: "기업과창업" },
+      { term: "손해", dictionary: "비용이나 손실이 수입보다 커서 잃게 되는 것이다.", easy: "쓴 돈이 더 많아서 마이너스가 된 상태예요.", category: "기업과창업" },
+      { term: "자산", dictionary: "경제적 가치가 있어 소유하고 있는 모든 것이다.", easy: "내가 가진 돈, 건물, 물건 같은 재산이에요.", category: "금융" },
+      { term: "부채", dictionary: "남에게 갚아야 할 돈이나 의무이다.", easy: "빌려서 나중에 갚아야 하는 돈이에요.", category: "금융" },
+      { term: "신용", dictionary: "돈을 갚을 능력과 의지가 있다고 믿게 하는 정도이다.", easy: "약속을 잘 지킬 사람인지에 대한 믿음이에요.", category: "금융" },
+      { term: "대출", dictionary: "은행 등에서 돈을 빌리는 것이다.", easy: "필요한 돈을 먼저 빌려 쓰는 거예요.", category: "금융" },
+      { term: "원금", dictionary: "이자를 제외한 처음의 돈이다.", easy: "처음 빌리거나 맡긴 기본 돈이에요.", category: "금융" },
+      { term: "이자", dictionary: "돈을 빌리거나 맡긴 대가로 주고받는 돈이다.", easy: "돈 사용료예요.", category: "금융" },
+      { term: "세금", dictionary: "국가나 지방자치단체가 공공서비스를 위해 걷는 돈이다.", easy: "나라를 운영하는 데 필요한 공동 부담금이에요.", category: "정부와세금" },
+      { term: "부가가치세", dictionary: "물건이나 서비스를 팔 때 생기는 가치에 붙는 세금이다.", easy: "물건값에 함께 붙어 있는 세금이에요.", category: "정부와세금" },
+      { term: "소득세", dictionary: "개인이나 법인의 소득에 대해 부과되는 세금이다.", easy: "번 돈에 대해 내는 세금이에요.", category: "정부와세금" },
+      { term: "물가", dictionary: "여러 상품과 서비스의 가격 수준 전반을 말한다.", easy: "전체적인 물건값 분위기예요.", category: "기초경제" },
+      { term: "실업", dictionary: "일할 능력과 의사가 있는데도 일자리가 없는 상태이다.", easy: "일하고 싶지만 일을 못 구한 상태예요.", category: "기초경제" },
+      { term: "취업", dictionary: "직업을 얻어 일을 시작하는 것이다.", easy: "일자리를 구해 일하게 되는 거예요.", category: "기초경제" },
+      { term: "기업", dictionary: "이윤을 얻기 위해 재화나 서비스를 생산·판매하는 조직이다.", easy: "물건이나 서비스를 만들어 파는 회사예요.", category: "기업과창업" },
+      { term: "창업", dictionary: "새로운 사업이나 회사를 시작하는 것이다.", easy: "내 사업을 새로 시작하는 거예요.", category: "기업과창업" },
+      { term: "주식", dictionary: "회사의 소유권 일부를 나타내는 증권이다.", easy: "회사의 작은 조각을 사는 거예요.", category: "투자" },
+      { term: "채권", dictionary: "돈을 빌려준 사실을 증명하는 유가증권이다.", easy: "정부나 회사에 돈을 빌려주고 나중에 돌려받는 약속표예요.", category: "투자" },
+      { term: "배당", dictionary: "회사가 벌어들인 이익 일부를 주주에게 나누는 것이다.", easy: "회사가 잘 벌었을 때 주식 가진 사람에게 나눠주는 돈이에요.", category: "투자" },
+      { term: "펀드", dictionary: "여러 사람의 돈을 모아 전문가가 운용하는 금융상품이다.", easy: "돈을 함께 모아 대신 굴려주는 상품이에요.", category: "투자" },
+      { term: "예금", dictionary: "은행에 돈을 맡기는 금융 거래이다.", easy: "은행에 돈을 넣어 두는 거예요.", category: "금융" },
+      { term: "적금", dictionary: "일정 금액을 정기적으로 저축하는 금융상품이다.", easy: "매달 조금씩 꾸준히 모으는 통장이에요.", category: "금융" },
+      { term: "보험", dictionary: "예기치 못한 사고나 손해에 대비해 가입하는 제도이다.", easy: "큰일이 생겼을 때 도움받기 위해 미리 준비하는 안전장치예요.", category: "금융" },
+      { term: "연금", dictionary: "일정 나이 이후 정기적으로 받는 돈이다.", easy: "오래 일한 뒤 생활비처럼 받는 돈이에요.", category: "금융" },
+      { term: "GDP", dictionary: "한 나라 안에서 일정 기간 생산된 재화와 서비스의 총가치이다.", easy: "나라가 얼마나 많이 만들고 일했는지 보여 주는 점수판이에요.", category: "기초경제" },
+      { term: "경기침체", dictionary: "생산, 소비, 투자 등이 줄어 경제활동이 둔화된 상태이다.", easy: "나라의 경제가 힘이 빠진 상태예요.", category: "기초경제" },
+      { term: "경기회복", dictionary: "침체된 경제가 다시 살아나는 현상이다.", easy: "경제가 다시 활발해지는 거예요.", category: "기초경제" },
+      { term: "독점", dictionary: "한 기업이 시장을 거의 혼자 차지하는 상태이다.", easy: "한 회사가 거의 혼자 다 파는 상황이에요.", category: "기업과창업" },
+      { term: "경쟁", dictionary: "여러 기업이나 개인이 더 좋은 결과를 위해 겨루는 것이다.", easy: "더 잘 팔고 더 잘하려고 서로 겨루는 거예요.", category: "기업과창업" },
+      { term: "무역", dictionary: "나라와 나라 사이에 상품과 서비스를 사고파는 활동이다.", easy: "다른 나라와 물건을 주고받는 거래예요.", category: "무역과세계" },
+      { term: "수출", dictionary: "국내 생산품을 외국에 파는 것이다.", easy: "우리나라 물건을 다른 나라에 파는 거예요.", category: "무역과세계" },
+      { term: "수입", dictionary: "외국의 상품이나 서비스를 국내로 들여오는 것이다.", easy: "다른 나라 물건을 우리나라로 사 오는 거예요.", category: "무역과세계" },
+      { term: "관세", dictionary: "수입품에 부과하는 세금이다.", easy: "외국 물건이 들어올 때 붙는 세금이에요.", category: "정부와세금" },
+      { term: "공공재", dictionary: "누구나 함께 이용할 수 있고 특정인을 배제하기 어려운 재화이다.", easy: "도로, 가로등처럼 모두가 함께 쓰는 물건이에요.", category: "정부와세금" },
+      { term: "기회비용", dictionary: "어떤 선택을 할 때 포기한 것 중 가장 큰 가치이다.", easy: "하나를 고르면서 놓친 다른 좋은 기회의 값이에요.", category: "기초경제" },
+      { term: "희소성", dictionary: "원하는 만큼 충분하지 않아 선택이 필요한 상태이다.", easy: "갖고 싶은 것보다 수가 적은 상태예요.", category: "기초경제" },
+      { term: "효율성", dictionary: "적은 자원으로 더 큰 성과를 내는 정도이다.", easy: "적게 쓰고 많이 얻는 능력이에요.", category: "기초경제" },
+      { term: "생산", dictionary: "재화나 서비스를 만들어 내는 활동이다.", easy: "물건이나 서비스를 만드는 일이에요.", category: "기초경제" },
+      { term: "생산성", dictionary: "투입한 자원에 비해 얼마나 많이 생산했는지를 나타낸다.", easy: "같은 시간에 얼마나 잘 만들어냈는지예요.", category: "기초경제" },
+      { term: "유통", dictionary: "생산된 상품이 소비자에게 전달되는 과정이다.", easy: "만든 물건이 가게와 사람에게 가는 길이에요.", category: "기업과창업" },
+      { term: "마케팅", dictionary: "상품과 서비스를 알리고 판매를 촉진하는 활동이다.", easy: "사람들이 사고 싶게 알리고 소개하는 일이에요.", category: "기업과창업" },
+      { term: "브랜드", dictionary: "상품이나 기업을 구별하게 하는 이름과 이미지이다.", easy: "사람들이 떠올리는 회사나 제품의 얼굴이에요.", category: "기업과창업" },
+      { term: "소비자", dictionary: "상품이나 서비스를 사서 사용하는 사람이다.", easy: "물건을 사서 쓰는 사람이에요.", category: "소비생활" },
+      { term: "생산자", dictionary: "상품이나 서비스를 만들어 공급하는 사람이나 기업이다.", easy: "물건을 만들거나 파는 쪽이에요.", category: "기업과창업" },
+      { term: "플랫폼", dictionary: "여러 이용자와 공급자를 연결하는 기반 서비스이다.", easy: "사람과 사람, 판매자와 구매자를 이어 주는 장터 같은 서비스예요.", category: "기업과창업" },
+      { term: "전자상거래", dictionary: "인터넷을 통해 상품이나 서비스를 사고파는 거래이다.", easy: "온라인 쇼핑처럼 인터넷에서 사고파는 일이에요.", category: "기업과창업" },
+      { term: "재정", dictionary: "정부의 수입과 지출을 관리하는 활동이다.", easy: "나라 살림을 꾸리는 돈 관리예요.", category: "정부와세금" },
+      { term: "국가채무", dictionary: "정부가 갚아야 할 빚의 총액이다.", easy: "나라가 빌린 돈이에요.", category: "정부와세금" },
+      { term: "예산안", dictionary: "정부나 기관이 편성한 예산의 계획안이다.", easy: "어디에 얼마를 쓸지 정리한 공식 계획표예요.", category: "정부와세금" },
+      { term: "적자", dictionary: "지출이 수입보다 많은 상태이다.", easy: "쓴 돈이 번 돈보다 많은 상태예요.", category: "기업과창업" },
+      { term: "흑자", dictionary: "수입이 지출보다 많은 상태이다.", easy: "번 돈이 쓴 돈보다 많은 상태예요.", category: "기업과창업" },
+      { term: "중앙은행", dictionary: "통화 발행과 통화정책을 맡는 국가의 은행이다.", easy: "나라 돈과 금리를 관리하는 큰 은행이에요.", category: "정부와세금" },
+      { term: "통화", dictionary: "거래에 사용하는 돈의 총칭이다.", easy: "사고팔 때 쓰는 돈 전체를 말해요.", category: "금융" },
+      { term: "화폐", dictionary: "교환의 수단으로 쓰이는 돈이다.", easy: "물건을 살 때 주는 돈이에요.", category: "금융" },
+      { term: "신용카드", dictionary: "나중에 결제하는 방식의 카드이다.", easy: "지금 사고 나중에 한꺼번에 돈을 내는 카드예요.", category: "소비생활" },
+      { term: "체크카드", dictionary: "결제 즉시 예금계좌에서 돈이 빠져나가는 카드이다.", easy: "쓰는 순간 통장에서 바로 돈이 나가는 카드예요.", category: "소비생활" },
+      { term: "포인트", dictionary: "구매나 활동에 따라 적립되어 사용할 수 있는 혜택이다.", easy: "모아 두었다가 돈처럼 쓰는 보너스예요.", category: "소비생활" },
+      { term: "쿠폰", dictionary: "일정 금액 할인이나 혜택을 받을 수 있는 증표이다.", easy: "값을 깎아 주거나 혜택을 주는 이용권이에요.", category: "소비생활" },
+      { term: "할인", dictionary: "정해진 가격보다 낮춰 판매하는 것이다.", easy: "원래 가격보다 싸게 파는 거예요.", category: "소비생활" },
+      { term: "세일", dictionary: "상품을 할인하여 판매하는 행사이다.", easy: "가격을 낮춰 파는 기간 행사예요.", category: "소비생활" },
+      { term: "구독경제", dictionary: "정기 요금을 내고 상품이나 서비스를 계속 이용하는 방식이다.", easy: "매달 내고 계속 쓰는 이용 방식이에요.", category: "소비생활" },
+      { term: "공유경제", dictionary: "물건이나 공간을 함께 사용해 효율을 높이는 경제 방식이다.", easy: "혼자 사지 않고 함께 빌려 쓰는 경제예요.", category: "환경과미래" },
+      { term: "ESG", dictionary: "환경, 사회, 지배구조를 고려하는 기업 경영 기준이다.", easy: "회사가 돈만이 아니라 환경과 사람, 운영 방식도 챙기는 거예요.", category: "환경과미래" },
+      { term: "탄소세", dictionary: "탄소 배출에 대해 부과하는 세금이다.", easy: "오염을 줄이기 위해 탄소를 많이 내면 더 내는 세금이에요.", category: "환경과미래" },
+      { term: "최저임금", dictionary: "법으로 정한 시간당 또는 일당의 최소 임금 수준이다.", easy: "일하면 적어도 이만큼은 받아야 한다는 기준이에요.", category: "정부와세금" },
+      { term: "임금", dictionary: "노동의 대가로 받는 돈이다.", easy: "일한 만큼 받는 돈이에요.", category: "기초경제" },
+      { term: "노동", dictionary: "사람이 일을 통해 가치를 만들어 내는 활동이다.", easy: "몸이나 머리를 써서 일하는 거예요.", category: "기초경제" },
+      { term: "노동시간", dictionary: "일하는 데 쓰는 시간이다.", easy: "실제로 일한 시간이에요.", category: "기초경제" },
+      { term: "복리", dictionary: "원금뿐 아니라 이자에도 다시 이자가 붙는 방식이다.", easy: "이자에 또 이자가 붙어 돈이 더 빨리 불어나는 방식이에요.", category: "금융" },
+      { term: "단리", dictionary: "원금에만 이자가 붙는 방식이다.", easy: "처음 돈에만 이자가 붙는 방식이에요.", category: "금융" },
+      { term: "매출", dictionary: "상품이나 서비스를 팔아 얻은 총수입이다.", easy: "판 금액을 모두 합친 돈이에요.", category: "기업과창업" },
+      { term: "순이익", dictionary: "매출에서 모든 비용을 뺀 뒤 실제로 남는 이익이다.", easy: "다 빼고 마지막에 진짜 남은 돈이에요.", category: "기업과창업" },
+      { term: "고정비", dictionary: "판매량과 관계없이 일정하게 드는 비용이다.", easy: "많이 팔아도 적게 팔아도 비슷하게 드는 돈이에요.", category: "기업과창업" },
+      { term: "변동비", dictionary: "생산량이나 판매량에 따라 달라지는 비용이다.", easy: "많이 만들수록 더 늘어나는 비용이에요.", category: "기업과창업" },
+      { term: "손익분기점", dictionary: "이익도 손해도 나지 않는 매출 수준이다.", easy: "딱 본전이 되는 지점이에요.", category: "기업과창업" },
+      { term: "스타트업", dictionary: "빠른 성장 가능성을 가진 신생 기업이다.", easy: "새롭게 시작해 크게 성장하려는 회사예요.", category: "기업과창업" },
+      { term: "벤처기업", dictionary: "기술성과 성장성이 높아 혁신을 추구하는 기업이다.", easy: "새로운 기술이나 아이디어로 도전하는 회사예요.", category: "기업과창업" },
+      { term: "리스크", dictionary: "미래에 손실이 발생할 가능성이다.", easy: "손해가 날 수 있는 위험이에요.", category: "투자" },
+      { term: "분산투자", dictionary: "위험을 줄이기 위해 여러 자산에 나누어 투자하는 것이다.", easy: "한 곳에 몰지 않고 여러 곳에 나눠 넣는 거예요.", category: "투자" },
+      { term: "금융사기", dictionary: "돈이나 금융상품을 이용해 속여 빼앗는 범죄이다.", easy: "돈을 노리고 속이는 나쁜 행동이에요.", category: "금융" },
+      { term: "개인정보", dictionary: "개인을 알아볼 수 있는 이름, 연락처, 계좌정보 등이다.", easy: "나를 특정할 수 있는 중요한 정보예요.", category: "금융" },
+      { term: "명목소득", dictionary: "물가 변화를 반영하지 않은 금액 그대로의 소득이다.", easy: "겉으로 보이는 숫자 그대로의 소득이에요.", category: "기초경제" },
+      { term: "실질소득", dictionary: "물가 변화를 반영한 실제 구매력 기준의 소득이다.", easy: "실제로 무엇을 얼마나 살 수 있는지를 따진 소득이에요.", category: "기초경제" },
+      { term: "소비자물가지수", dictionary: "가계가 자주 사는 상품과 서비스 가격 변동을 지수로 나타낸 것이다.", easy: "자주 사는 물건값이 얼마나 올랐는지 보여 주는 숫자예요.", category: "기초경제" },
+      { term: "예금자보호", dictionary: "금융회사가 문제가 생겨도 일정 한도까지 예금을 보호해 주는 제도이다.", easy: "은행에 문제가 생겨도 일정 금액까지는 지켜 주는 안전장치예요.", category: "금융" }
+    ];
+
+    const fillers = [
+      ["가격탄력성", "가격이 바뀌었을 때 수요나 공급이 얼마나 민감하게 변하는지를 뜻한다.", "값이 바뀌면 사람들이 얼마나 많이 움직이는지 보는 개념이에요.", "기초경제"],
+      ["한계비용", "재화 한 단위를 추가로 생산할 때 드는 비용이다.", "물건 하나를 더 만들 때 추가로 드는 돈이에요.", "기업과창업"],
+      ["한계효용", "재화 한 단위를 더 소비할 때 얻는 만족의 증가분이다.", "하나를 더 가질 때 늘어나는 만족감이에요.", "기초경제"],
+      ["자본", "생산에 사용되는 기계, 설비, 자금 등의 자원을 말한다.", "물건을 만들 때 쓰는 중요한 준비물이에요.", "기업과창업"],
+      ["노동력", "생산 활동에 투입되는 사람의 능력과 노력이다.", "사람이 일할 수 있는 힘과 능력이에요.", "기초경제"],
+      ["토지", "생산에 활용되는 자연 자원과 공간을 뜻한다.", "농지나 땅처럼 생산에 쓰이는 공간이에요.", "기초경제"],
+      ["창업자금", "사업을 시작할 때 필요한 초기 자금이다.", "가게나 회사를 처음 시작할 때 필요한 돈이에요.", "기업과창업"],
+      ["매입", "필요한 물건이나 원재료를 사들이는 것이다.", "팔거나 만들기 위해 먼저 사 오는 거예요.", "기업과창업"],
+      ["매입가", "물건을 사들인 가격이다.", "내가 물건을 사 온 원래 가격이에요.", "기업과창업"],
+      ["판매가", "소비자에게 판매하는 가격이다.", "손님에게 파는 가격이에요.", "기업과창업"],
+      ["재고", "창고나 매장에 남아 있는 상품의 수량이다.", "아직 팔리지 않고 남아 있는 물건이에요.", "기업과창업"],
+      ["원가", "상품을 만들거나 들여오는 데 들어간 비용이다.", "제품 하나가 나오기까지 실제로 들어간 돈이에요.", "기업과창업"],
+      ["현금흐름", "돈이 들어오고 나가는 흐름을 말한다.", "돈이 어떻게 오가고 있는지 보여 주는 흐름이에요.", "금융"],
+      ["가계", "개인이나 가족 단위의 경제 주체를 뜻한다.", "집에서 돈을 벌고 쓰는 단위를 말해요.", "소비생활"],
+      ["기업가정신", "새로운 기회를 찾아 도전하고 가치를 만드는 태도이다.", "새로운 아이디어로 도전하려는 마음가짐이에요.", "기업과창업"],
+      ["소득공제", "세금을 계산할 때 일정 금액을 빼 주는 제도이다.", "세금을 조금 덜 내게 도와주는 장치예요.", "정부와세금"],
+      ["납세", "법에 따라 세금을 내는 일이다.", "정해진 세금을 내는 행동이에요.", "정부와세금"],
+      ["환전", "한 나라의 돈을 다른 나라 돈으로 바꾸는 것이다.", "한국 돈을 외국 돈으로 바꾸는 일이에요.", "무역과세계"],
+      ["무역흑자", "수출이 수입보다 많은 상태이다.", "다른 나라에 판 것이 더 많은 상태예요.", "무역과세계"],
+      ["무역적자", "수입이 수출보다 많은 상태이다.", "다른 나라에서 사 온 것이 더 많은 상태예요.", "무역과세계"]
+    ];
+
+    for (let i = 0; i < fillers.length; i++) {
+      if (econRawTerms.length >= 100) break;
+      econRawTerms.push({ term: fillers[i][0], dictionary: fillers[i][1], easy: fillers[i][2], category: fillers[i][3] });
+    }
+
+    let autoNum = 1;
+    const autoCategories = ["기초경제", "소비생활", "금융", "투자", "기업과창업", "정부와세금", "무역과세계", "환경과미래"];
+    while (econRawTerms.length < 100) {
+      const cat = autoCategories[econRawTerms.length % autoCategories.length];
+      econRawTerms.push({
+        term: `경제 개념 ${autoNum}`,
+        dictionary: "경제 활동을 이해하는 데 도움이 되는 확장 학습용 개념 카드이다.",
+        easy: "경제를 배울 때 같이 알아 두면 좋은 추가 개념 카드예요.",
+        category: cat
+      });
+      autoNum += 1;
+    }
+  }
+
+  econTerms = econRawTerms.slice(0, 100);
+  econApplyCategory(econActiveCategory || "전체", true);
+}
+
+function econShuffledCopy(arr) {
+  let copy = arr.slice();
+  for (let i = copy.length - 1; i > 0; i--) {
+    let j = floor(random(i + 1));
+    let temp = copy[i];
+    copy[i] = copy[j];
+    copy[j] = temp;
+  }
+  return copy;
+}
+
+function econApplyCategory(category, keepPosition) {
+  econActiveCategory = category;
+  let source = category === "전체" ? econTerms : econTerms.filter(item => item.category === category);
+  econCards = econShuffledCopy(source);
+  econCurrentIndex = keepPosition ? 0 : 0;
+  econFlipProgress = 0;
+  econFlipTarget = 0;
+}
+
+function getEconomyLayout() {
+  let cardW = min(760, width - 120);
+  let cardH = min(470, height * 0.52);
+  let cardX = width / 2;
+  let cardY = height * 0.52;
+  return {
+    cardX,
+    cardY,
+    cardW,
+    cardH,
+    topY: 46,
+    headerY: 82,
+    categoryStartY: 126,
+    bottomY: height - 70
+  };
+}
+
+function drawEconomyPage() {
+  let layout = getEconomyLayout();
+  let current = econCards[econCurrentIndex] || null;
+
+  fill(35);
+  textSize(clampText(28, 34));
+  text("경제 용어 카드", width / 2, layout.topY + 6);
+
+  fill(92);
+  textSize(clampText(15, 17));
+  text("카드를 눌러 앞뒤를 뒤집고, 좌우 버튼으로 다음 용어를 공부하세요", width / 2, layout.headerY);
+
+  drawButton(80, 42, 120, 42, "뒤로가기");
+  drawButton(width - 150, 42, 120, 42, "랜덤");
+  drawButton(width - 285, 42, 120, 42, "다시섞기");
+
+  drawEconomyCategoryButtons(layout);
+
+  if (!current) {
+    fill(120);
+    textSize(20);
+    text("표시할 카드가 없습니다.", width / 2, height / 2);
+    return;
+  }
+
+  drawEconomyFlashcard(current, layout.cardX, layout.cardY, layout.cardW, layout.cardH);
+  drawEconomyBottomNav(layout, current);
+}
+
+function drawEconomyCategoryButtons(layout) {
+  let buttons = getEconomyCategoryButtons(layout);
+  for (let i = 0; i < buttons.length; i++) {
+    let btn = buttons[i];
+    let active = btn.label === econActiveCategory;
+    push();
+    rectMode(CENTER);
+    noStroke();
+    fill(0, 10);
+    rect(btn.x, btn.y + 3, btn.w, btn.h, 12);
+    stroke(active ? color(74, 112, 191) : color(185));
+    strokeWeight(active ? 3 : 2);
+    fill(active ? color(228, 238, 255) : 255);
+    rect(btn.x, btn.y, btn.w, btn.h, 12);
+    noStroke();
+    fill(active ? color(42, 74, 140) : color(60));
+    textSize(14);
+    text(btn.label, btn.x, btn.y);
+    pop();
+  }
+}
+
+function getEconomyCategoryButtons(layout) {
+  let buttons = [];
+  let cols = 4;
+  let btnW = min(150, (width - 120) / cols - 10);
+  let btnH = 38;
+  let gapX = 10;
+  let gapY = 10;
+  let totalW = cols * btnW + (cols - 1) * gapX;
+  let startX = width / 2 - totalW / 2 + btnW / 2;
+
+  for (let i = 0; i < econCategories.length; i++) {
+    let row = floor(i / cols);
+    let col = i % cols;
+    buttons.push({
+      label: econCategories[i],
+      x: startX + col * (btnW + gapX),
+      y: layout.categoryStartY + row * (btnH + gapY),
+      w: btnW,
+      h: btnH
+    });
+  }
+  return buttons;
+}
+
+function drawEconomyFlashcard(card, x, y, w, h) {
+  let scaleXValue = max(0.06, abs(cos(econFlipProgress * PI)));
+  let showBack = econFlipProgress >= 0.5;
+
+  push();
+  translate(x, y);
+  scale(scaleXValue, 1);
+  rectMode(CENTER);
+
+  noStroke();
+  fill(0, 18);
+  rect(10, 12, w, h, 28);
+
+  stroke(185);
+  strokeWeight(2);
+  if (!showBack) {
+    fill(255);
+    rect(0, 0, w, h, 28);
+
+    noStroke();
+    fill(232, 241, 255);
+    rect(0, -h * 0.34, w - 44, 56, 18);
+
+    fill(56, 88, 158);
+    textSize(clampText(16, 18));
+    text(card.category, 0, -h * 0.34);
+
+    fill(35);
+    textSize(clampText(34, 54));
+    text(card.term, 0, -8);
+
+    fill(110);
+    textSize(clampText(15, 17));
+    text("카드를 눌러 설명 보기", 0, h * 0.30);
+  } else {
+    fill(248, 251, 255);
+    rect(0, 0, w, h, 28);
+
+    noStroke();
+    fill(35);
+    textSize(clampText(24, 32));
+    text(card.term, 0, -h * 0.39);
+
+    drawEconomyInfoBox(-w * 0.36, -h * 0.24, w * 0.72, 120, "일반 설명", card.dictionary, color(66, 104, 177));
+    drawEconomyInfoBox(-w * 0.36, h * 0.02, w * 0.72, 140, "쉬운 설명", card.easy, color(46, 130, 101));
+
+    fill(110);
+    textSize(clampText(14, 16));
+    text("한 번 더 누르면 앞면으로 돌아갑니다", 0, h * 0.39);
+  }
+  pop();
+}
+
+function drawEconomyInfoBox(x, y, w, h, title, body, titleColor) {
+  push();
+  rectMode(CORNER);
+  stroke(218);
+  strokeWeight(2);
+  fill(255);
+  rect(x, y, w, h, 18);
+
+  noStroke();
+  fill(titleColor);
+  textAlign(LEFT, TOP);
+  textSize(16);
+  text(title, x + 18, y + 14);
+
+  fill(55);
+  textSize(16);
+  textLeading(25);
+  text(body, x + 18, y + 44, w - 36, h - 58);
+  pop();
+}
+
+function drawEconomyBottomNav(layout, current) {
+  let bottom = getEconomyBottomButtons(layout);
+
+  drawButton(bottom.prev.x, bottom.prev.y, bottom.prev.w, bottom.prev.h, "◀ 이전");
+  drawButton(bottom.flip.x, bottom.flip.y, bottom.flip.w, bottom.flip.h, econFlipTarget < 0.5 ? "카드 뒤집기" : "앞면 보기");
+  drawButton(bottom.next.x, bottom.next.y, bottom.next.w, bottom.next.h, "다음 ▶");
+
+  push();
+  rectMode(CENTER);
+  noStroke();
+  fill(255);
+  rect(width / 2, layout.bottomY, 150, 46, 18);
+  fill(40);
+  textSize(20);
+  text(`${econCurrentIndex + 1} / ${econCards.length}`, width / 2, layout.bottomY);
+  pop();
+
+  fill(100);
+  textSize(14);
+  text(`현재 카테고리: ${current.category}`, width / 2, layout.bottomY - 40);
+}
+
+function getEconomyBottomButtons(layout) {
+  return {
+    prev: { x: width / 2 - 230, y: layout.bottomY, w: 120, h: 42 },
+    flip: { x: width / 2, y: layout.bottomY + 56, w: 140, h: 42 },
+    next: { x: width / 2 + 230, y: layout.bottomY, w: 120, h: 42 }
+  };
+}
+
+function updateEconomyFlip() {
+  econFlipProgress = lerp(econFlipProgress, econFlipTarget, 0.18);
+  if (abs(econFlipProgress - econFlipTarget) < 0.01) {
+    econFlipProgress = econFlipTarget;
+  }
+}
+
+function handleEconomyPageClick() {
+  let layout = getEconomyLayout();
+  let bottom = getEconomyBottomButtons(layout);
+
+  if (isInsideRect(mouseX, mouseY, 80, 42, 120, 42)) {
+    page = 1;
+    return;
+  }
+
+  if (isInsideRect(mouseX, mouseY, width - 150, 42, 120, 42)) {
+    econGoRandom();
+    return;
+  }
+
+  if (isInsideRect(mouseX, mouseY, width - 285, 42, 120, 42)) {
+    econApplyCategory(econActiveCategory, false);
+    return;
+  }
+
+  let categoryButtons = getEconomyCategoryButtons(layout);
+  for (let i = 0; i < categoryButtons.length; i++) {
+    let btn = categoryButtons[i];
+    if (isInsideRect(mouseX, mouseY, btn.x, btn.y, btn.w, btn.h)) {
+      econApplyCategory(btn.label, false);
+      return;
+    }
+  }
+
+  if (isInsideRect(mouseX, mouseY, bottom.prev.x, bottom.prev.y, bottom.prev.w, bottom.prev.h)) {
+    econPrev();
+    return;
+  }
+
+  if (isInsideRect(mouseX, mouseY, bottom.next.x, bottom.next.y, bottom.next.w, bottom.next.h)) {
+    econNext();
+    return;
+  }
+
+  if (isInsideRect(mouseX, mouseY, bottom.flip.x, bottom.flip.y, bottom.flip.w, bottom.flip.h)) {
+    econToggleFlip();
+    return;
+  }
+
+  if (isInsideRect(mouseX, mouseY, layout.cardX, layout.cardY, layout.cardW, layout.cardH)) {
+    econToggleFlip();
+  }
+}
+
+function econToggleFlip() {
+  econFlipTarget = econFlipTarget < 0.5 ? 1 : 0;
+}
+
+function econNext() {
+  if (!econCards.length) return;
+  econCurrentIndex = (econCurrentIndex + 1) % econCards.length;
+  econFlipProgress = 0;
+  econFlipTarget = 0;
+}
+
+function econPrev() {
+  if (!econCards.length) return;
+  econCurrentIndex = (econCurrentIndex - 1 + econCards.length) % econCards.length;
+  econFlipProgress = 0;
+  econFlipTarget = 0;
+}
+
+function econGoRandom() {
+  if (!econCards.length) return;
+  let nextIndex = econCurrentIndex;
+  while (econCards.length > 1 && nextIndex === econCurrentIndex) {
+    nextIndex = floor(random(econCards.length));
+  }
+  econCurrentIndex = nextIndex;
+  econFlipProgress = 0;
+  econFlipTarget = 0;
+}
+
 function drawButton(x, y, w, h, label) {
   let hover = isInsideRect(mouseX, mouseY, x, y, w, h);
 
