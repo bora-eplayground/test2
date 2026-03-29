@@ -1210,7 +1210,7 @@ function drawRobotLeftPanel(ui) {
   rect(p.x + p.w / 2, p.y + 112, 54, 14, 10);
   pop();
 
-drawRobotText("쓰레기통", p.x + 16, p.y + 86, p.w - 32, 22, 18, LEFT, color(101, 69, 35));
+drawRobotText("쓰레기통", p.x + 16, p.y + 79, p.w - 32, 22, 18, LEFT, color(101, 69, 35));
 
   drawRobotParagraph(
     "청소로봇은 교실 바닥의 물건을 보고,\n쓰레기통으로 보낼지\n책상 위에 둘지 정합니다.",
