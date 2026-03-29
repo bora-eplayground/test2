@@ -1308,19 +1308,19 @@ function drawRobotRightPanel(ui) {
     14
   );
 
-  drawRobotParagraph(
-    robotStage === 1
-      ? "1단계에서는 색과 겉모양만 보고 판단해\n오답이 자주 납니다."
-      : "2단계에서는 물건의 특징을 배워\n거의 정확하게 구분합니다.",
-    p.x + 18 + textShift,
-    p.y + 300,
-    p.w - 36 - textShift,
-    42,
-    13,
-    20,
-    LEFT,
-    color(110)
-  );
+ drawRobotParagraph(
+  robotStage === 1
+    ? "1단계에서는 색과 겉모양만 보고 판단해\n오답이 자주 납니다."
+    : "2단계에서는 물건의 특징을 배워\n거의 정확하게 구분합니다.",
+  p.x + 72,
+  p.y + 300,
+  p.w - 90,
+  42,
+  13,
+  20,
+  LEFT,
+  color(110)
+);
 }
 
 function drawRobotBottomPanels(ui) {
