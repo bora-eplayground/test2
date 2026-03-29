@@ -1274,17 +1274,17 @@ function drawRobotRightPanel(ui) {
 
   drawRobotText("청소로봇 판단", p.x, p.y + 14, p.w, 24, 22, CENTER, color(35));
 
-  drawRobotParagraph(
-    "로봇이 이 물건을 어떻게 판단하는지\n확인해 보세요.",
-    p.x + 18 + textShift,
-    p.y + 48,
-    p.w - 36 - textShift,
-    42,
-    14,
-    20,
-    LEFT,
-    color(95)
-  );
+drawRobotParagraph(
+  "로봇이 이 물건을 어떻게 판단하는지\n확인해 보세요.",
+  p.x + 72,
+  p.y + 48,
+  p.w - 90,
+  42,
+  14,
+  20,
+  LEFT,
+  color(95)
+);
 
   drawRobotInfoCard(
     p.x + 18,
