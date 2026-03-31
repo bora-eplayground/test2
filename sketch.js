@@ -1271,33 +1271,44 @@ function drawRobotLeftPanel(ui) {
 
   drawRobotText("청소 구역", p.x, p.y + 14, p.w, 24, 22, CENTER, color(35));
 
-  push();
-  rectMode(CENTER);
+   push();
+  rectMode(CORNER);
+
+  const iconBoxW = 120;
+  const iconBoxH = 150;
+  const iconBoxX = p.x + (p.w - iconBoxW) / 2;
+  const iconBoxY = p.y + 95;
+
+  noStroke();
+  fill(101, 69, 35);
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  textStyle(NORMAL);
+  text("쓰레기통", iconBoxX + iconBoxW / 2, iconBoxY - 28);
+
+  noFill();
   stroke(239, 168, 53);
   strokeWeight(2);
-  fill(252, 247, 238);
-  rect(p.x + p.w / 2, p.y + 142, 94, 118, 22);
+  rect(iconBoxX, iconBoxY, iconBoxW, iconBoxH, 22);
 
   noStroke();
   fill(130);
-  rect(p.x + p.w / 2, p.y + 146, 42, 78, 12);
-  rect(p.x + p.w / 2, p.y + 112, 54, 14, 10);
+  rect(iconBoxX + 39, iconBoxY + 38, 42, 78, 12);
+  rect(iconBoxX + 33, iconBoxY + 28, 54, 14, 10);
+
   pop();
 
-drawRobotText("쓰레기통", p.x + 16, p.y + 79, p.w - 32, 22, 18, LEFT, color(101, 69, 35));
-
   drawRobotParagraph(
-    "청소로봇은 교실 바닥의 물건을 보고,\n쓰레기통으로 보낼지\n책상 위에 둘지 정합니다.",
-    p.x + 16 + textShift,
-    p.y + 238,
-    p.w - 32 - textShift,
-    78,
-    14,
-    22,
-    LEFT,
+    "청소로봇은\n교실 바닥의\n물건을 보고,\n쓰레기통으로\n분류합니다.",
+    p.x + 24,
+    iconBoxY + iconBoxH + 14,
+    p.w - 48,
+    150,
+    16,
+    28,
+    CENTER,
     color(110)
   );
-}
 
 function drawRobotCenterPanel(ui) {
   const p = ui.center;
