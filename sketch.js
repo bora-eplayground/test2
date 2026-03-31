@@ -1350,9 +1350,9 @@ function drawRobotRightPanel(ui) {
 
 drawRobotParagraph(
   "로봇이 이 물건을 어떻게 판단하는지\n확인해 보세요.",
-  p.x + 250,
+  p.x + 220,
   p.y + 48,
-  p.w - 270,
+  p.w - 240,
   42,
   14,
   20,
