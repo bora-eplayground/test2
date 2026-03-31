@@ -1,10 +1,4 @@
-function setup() {
-  createCanvas(400, 400);
-}
-
-function draw() {
-  background(220);
-}let page = 1;
+let page = 1;
 let cnv;
 
 // --------------------
@@ -1267,11 +1261,10 @@ function drawRobotPanel(x, y, w, h, r) {
 
 function drawRobotLeftPanel(ui) {
   const p = ui.left;
-  const textShift = 90;
 
   drawRobotText("청소 구역", p.x, p.y + 14, p.w, 24, 22, CENTER, color(35));
 
-   push();
+  push();
   rectMode(CORNER);
 
   const iconBoxW = 120;
@@ -1309,6 +1302,7 @@ function drawRobotLeftPanel(ui) {
     CENTER,
     color(110)
   );
+}
 
 function drawRobotCenterPanel(ui) {
   const p = ui.center;
@@ -1361,9 +1355,9 @@ function drawRobotRightPanel(ui) {
 
 drawRobotParagraph(
   "로봇이 이 물건을 어떻게 판단하는지\n확인해 보세요.",
-  p.x + 220,
+  p.x + 72,
   p.y + 48,
-  p.w - 240,
+  p.w - 90,
   42,
   14,
   20,
