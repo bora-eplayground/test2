@@ -1354,11 +1354,11 @@ function drawRobotRightPanel(ui) {
   drawRobotText("청소로봇 판단", p.x, p.y + 14, p.w, 24, 22, CENTER, color(35));
 
 drawRobotParagraph(
-  "로봇이 이 물건을 어떻게 판단하는지\n확인해 보세요.",
-  p.x + 220,
-  p.y + 48,
-  p.w - 240,
-  42,
+  "로봇이 이 물건을 어떻게\n판단하는지 확인해보세요.",
+  p.x + 180,
+  p.y + 42,
+  p.w - 210,
+  60,
   14,
   20,
   LEFT,
